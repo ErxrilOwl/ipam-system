@@ -1,0 +1,15 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/node_modules
+/public/build
+/public/hot
+/public/storage
