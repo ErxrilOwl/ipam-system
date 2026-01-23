@@ -2,55 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Models\RefreshToken;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->only(['email', 'password']);
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-        if (!$token = auth()->attempt($credentials)) {
+        if (!$token = auth()-> attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized', 401]);
         }
 
-        return $this->createResponse($token);
-    }
+        $refreshToken = Str::random(64);
 
-    public function register(RegisterRequest $request)
-    {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role
+        RefreshToken::create([
+            'user_id' => auth()->user()->id,
+            'token' => $refreshToken,
+            'expires_at' => Carbon::now()->addDays(7)
         ]);
 
-        return response()->json([
-            'message' => 'User successfully registered',
-            'data' => new UserResource($user)
+        return $this->createResponse($token, $refreshToken);
+    }
+
+    public function refresh(Request $request)
+    {
+        $request->validate([
+            'refresh_token' => 'required'
         ]);
+
+        $storedToken = RefreshToken::where('token', $request->refresh_token)
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (!$storedToken) {
+            return response()->json(['error' => 'Invalid refresh token'], 401);
+        }
+
+        return $this->createResponse(auth()->refresh(), $request->refresh_token);
     }
 
-    public function refresh()
+    public function logout(Request $request)
     {
-        return $this->createResponse(auth()->refresh());
+        $user = auth()->user();
+
+        RefreshToken::where('user_id', $user->id)->delete();
+
+        auth()->logout();
+
+        return response()->json(['message' => 'Successfully logged out!']);
     }
 
-    public function user()
+    public function me()
     {
-        return response()->json(auth()->user());
+        return response()->json(new UserResource(auth()->user()));
     }
 
-    protected function createResponse($token)
+    protected function createResponse($token, $refreshToken)
     {
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'bearer',
+            'refresh_token' => $refreshToken,
+            'auth_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => new UserResource(auth()->user())
         ]);
