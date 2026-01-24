@@ -4,13 +4,14 @@ const axios = require('axios');
 const client = axios.create({
     baseURL: process.env.AUTH_SERVICE_URL,
     headers: {
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
     }
 });
 
 exports.login = data => client.post('/auth/login', data);
-exports.me = () => client.get('/auth/me');
-exports.refresh = data => client.post('/auth/refresh', data);
-exports.logout = data => client.post('/auth/logout', data);
+exports.me = headers => client.get('/auth/me', { headers });
+exports.refresh = (data, headers) => client.post('/auth/refresh', data, { headers });
+exports.logout = headers => client.post('/auth/logout', null, { headers });
 
-exports.createUser = data => client.post('/users', data);
+exports.createUser = (data, headers) => client.post('/users', data, { headers });

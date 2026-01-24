@@ -1,21 +1,19 @@
 const authService = require('../services/auth');
+const authUtil = require('../utilities/auth');
 
 exports.login = async (req, res) => {
     try {
-        console.log('LOGIN');
-        console.log(req.body);
         const response = await authService.login(req.body);
         
         res.json(response.data);
     } catch (err) {
-        console.log(err);
         res.status(401).json(err.response?.data || { error: 'Login failed' });
     }
 }
 
 exports.me = async (req, res) => {
     try {
-        const response = await authService.me();
+        const response = await authService.me(authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
         res.status(401).json(err.response?.data || { error: 'Failed to get user' });
@@ -24,7 +22,7 @@ exports.me = async (req, res) => {
 
 exports.refresh = async (req, res) => {
     try {
-        const response = await authService.refresh(req.body);
+        const response = await authService.refresh(req.body, authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
         res.status(401).json(err.response?.data || { error: 'Failed to refresh token' });
@@ -33,7 +31,7 @@ exports.refresh = async (req, res) => {
 
 exports.logout = async (req, res) => {
     try {
-        const response = await authService.logout(req.body);
+        const response = await authService.logout(authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
         res.status(401).json(err.response?.data || { error: 'Logout failed' });
@@ -42,7 +40,7 @@ exports.logout = async (req, res) => {
 
 exports.createUser = async (req, res) => {
     try {
-        const response = await authService.createUser(req.body);
+        const response = await authService.createUser(req.body, authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
         res.status(401).json(err.response?.data || { error: 'Failed to create user' });

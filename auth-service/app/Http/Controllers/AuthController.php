@@ -13,7 +13,6 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        Log::info("CREDS", $request->only(['email', 'password']));
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
