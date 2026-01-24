@@ -1,15 +1,19 @@
-require('dotenv').config()
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
-const authServiceRoutes = require('./routes/auth-service');
+const apiRouter = require('./routes/api');
+
+const errorController = require('./controllers/error');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/auth', authServiceRoutes);
+app.use('/api', apiRouter);
+
+app.use(errorController.get404);
 
 app.listen(process.env.PORT, () => {
     console.log(`Gateware Service running on port ${process.env.PORT}`)
