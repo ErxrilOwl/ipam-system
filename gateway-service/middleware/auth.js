@@ -18,6 +18,9 @@ const authenticate = (req, res, next) => {
             exp: decoded.exp
         }
 
+        req.headers['x-user-id'] = decoded.sub;
+        req.headers['x-user-role'] = decoded.role;
+
         next();
     } catch (err) {
         res.status(401).json({ error: 'Invalid or expired token' });
