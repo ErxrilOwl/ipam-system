@@ -35,4 +35,15 @@ class AuditLog extends Model
             abort(403);
         });
     }
+
+    public function scopeFilter($query, $filters)
+    {
+        if ($filters['user_id'] ?? false) {
+            $query->where('user_id', $filters['user_id']);
+        }
+
+        if ($filters['resource_id'] ?? false) {
+            $query->where('resource_id', $filters['resource_id']);
+        }
+    }
 }

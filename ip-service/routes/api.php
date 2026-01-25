@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\IpAddressController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'gateway.auth'], function() {
@@ -11,4 +11,6 @@ Route::group(['middleware' => 'gateway.auth'], function() {
         Route::put('/{ipAddress}', [IpAddressController::class, 'update']);
         Route::delete('/{ipAddress}', [IpAddressController::class, 'destroy']);
     });
+
+    Route::get('audit-logs', [AuditLogController::class, 'index']);
 });

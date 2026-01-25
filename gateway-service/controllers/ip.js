@@ -40,3 +40,13 @@ exports.deleteIPAddress = async (req, res) => {
         res.status(401).json(err.response?.data || { error: 'Failed to create IP address' });
     }
 }
+
+exports.getAuditLogs = async (req, res) => {
+    try {
+        const queryParams = req.query;
+        const response = await ipService.getAuditLogs(queryParams, ipUtil.getAuthHeaders(req));
+        res.json(response.data);
+    } catch (err) {
+        res.status(401).json(err.response?.data || { error: 'Failed to audit logs' });
+    }
+}

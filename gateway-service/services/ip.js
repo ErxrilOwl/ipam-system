@@ -9,10 +9,8 @@ const client = axios.create({
     }
 });
 
-exports.getIPAddresses = (params, headers) => {
-    console.log(headers);
-    return client.get('/ip-addresses', { params, headers })
-};
+exports.getIPAddresses = (params, headers) => client.get('/ip-addresses', { params, headers });
 exports.createIPAddress = (data, headers) => client.post('/ip-addresses', data, { headers });
 exports.updateIPAddress = (id, data, headers) => client.put(`/ip-addresses/${id}`, data, { headers });
 exports.deleteIPAddress = (id, headers) => client.delete(`/ip-addresses/${id}`, { headers });
+exports.getAuditLogs = (params, headers) => client.get(`/audit-logs`, { headers });
