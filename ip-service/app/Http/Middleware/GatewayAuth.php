@@ -16,8 +16,6 @@ class GatewayAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info($request->hasHeader('x-user-id'));
-        Log::info($request->hasHeader('x-user-role'));
         if (!$request->hasHeader('x-user-id') ||
             !$request->hasHeader('x-user-role')) {
             return response()->json(['error' => 'Unauthorized'], 401);

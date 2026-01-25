@@ -10,7 +10,8 @@ class IpAddress extends Model
         'ip_address',
         'label',
         'comment',
-        'created_by'
+        'created_by',
+        'user_name'
     ];
 
     public function scopeFilter($query, $filters)

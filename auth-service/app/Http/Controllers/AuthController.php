@@ -18,7 +18,9 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        if (!$token = auth()-> attempt($credentials)) {
+        $sessionId = Str::uuid();
+
+        if (!$token = auth()->claims(['session_id' => $sessionId])->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized', 401]);
         }
 

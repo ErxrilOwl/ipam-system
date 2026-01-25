@@ -15,11 +15,17 @@ const authenticate = (req, res, next) => {
         res.user = {
             id: decoded.sub,
             role: decoded.role,
+            name: decoded.name,
+            session_id: decoded.session_id,
             exp: decoded.exp
         }
 
+        console.log(decoded);
+
         req.headers['x-user-id'] = decoded.sub;
+        req.headers['x-user-name'] = decoded.name;
         req.headers['x-user-role'] = decoded.role;
+        req.headers['x-session-id'] = decoded.session_id;
 
         next();
     } catch (err) {

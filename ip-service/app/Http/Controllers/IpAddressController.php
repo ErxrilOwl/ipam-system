@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\IpAddressFormRequest;
 use App\Http\Resources\IpAddressResource;
 use App\Models\IpAddress;
+use App\Services\AuditLogger;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class IpAddressController extends Controller
 {
@@ -19,17 +22,35 @@ class IpAddressController extends Controller
 
     public function store(IpAddressFormRequest $request)
     {
-        $ipAddress = IpAddress::create([
-            'ip_address' => $request->ip_address,
-            'label' => $request->label,
-            'comment' => $request->comment,
-            'created_by' => $request->header('x-user-id')
-        ]);
+        DB::beginTransaction();
 
-        return response()->json([
-            'message' => 'IP Address successfully created',
-            'data' => new IpAddressResource($ipAddress)
-        ], 201);
+        try {
+            $ipAddress = IpAddress::create([
+                'ip_address' => $request->ip_address,
+                'label' => $request->label,
+                'comment' => $request->comment,
+                'created_by' => $request->header('x-user-id'),
+                'user_name' => $request->header('x-user-name')
+            ]);
+
+            AuditLogger::log(
+                $request,
+                'CREATED_IP',
+                'ip_address',
+                $ipAddress->id,
+                null,
+                $ipAddress->toArray()
+            );
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'IP Address successfully created',
+                'data' => new IpAddressResource($ipAddress)
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Something went wrong.'], 500);
+        }
     }
 
     public function update(Request $request, IpAddress $ipAddress)
@@ -51,22 +72,57 @@ class IpAddressController extends Controller
             $data['comment'] = $request->comment;
         }
 
-        $ipAddress->update($data);
+        DB::beginTransaction();
 
-        return response()->json([
-            'message' => 'IP Address successfully updated',
-            'data' => new IpAddressResource($ipAddress)
-        ]);
+        try {
+            $before = $ipAddress->toArray();
+            $ipAddress->update($data);
+
+            AuditLogger::log(
+                $request,
+                'UPDATED_IP',
+                'ip_address',
+                $ipAddress->id,
+                $before,
+                $ipAddress->toArray()
+            );
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'IP Address successfully updated',
+                'data' => new IpAddressResource($ipAddress)
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Something went wrong.'], 500);
+        }
     }
 
     public function destroy(Request $request, IpAddress $ipAddress)
     {
-        if ($request->header('x-user-role') !== 'admin') {
-            return response()->json(['error' => 'Forbidden'], 403);
+        DB::beginTransaction();
+
+        try {
+            if ($request->header('x-user-role') !== 'admin') {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
+
+            $ipAddress->delete();
+
+            AuditLogger::log(
+                $request,
+                'DELETED_IP',
+                'ip_address',
+                $ipAddress->id,
+                $ipAddress->toArray(),
+                null
+            );
+
+            DB::commit();
+
+            return response()->json(['message' => 'IP Adresses successfully deleted.']);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Something went wrong.'], 500);
         }
-
-        $ipAddress->delete();
-
-        return response()->json(['message' => 'IP Adresses successfully deleted.']);
     }
 }
