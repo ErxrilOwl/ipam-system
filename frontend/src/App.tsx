@@ -1,25 +1,13 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './pages/Login';
-import IPList from './pages/IPList';
+import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
-import { ProtectedRoute } from './auth/ProtectedRoute';
 
-import './App.css'
+import './css/globals.css';
+import { router } from './routes/Router';
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-
-          <Route path="/" element={
-            <ProtectedRoute>
-              <IPList />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </BrowserRouter>
+      <RouterProvider router={router} />
     </AuthProvider>
   )
 }

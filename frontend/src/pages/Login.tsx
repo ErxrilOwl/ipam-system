@@ -1,65 +1,95 @@
 import { useState } from "react";
 import { login as loginApi } from '../api/auth.api';
 import { useAuth } from "../auth/AuthContext"
+import CardBox from "../components/shared/CardBox";
+import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
+import { Checkbox } from "../components/ui/checkbox";
+import { Link } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { router } from "../routes/Router";
 
 const Login = () => {
     const { auth } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const submit = async (e: React.FormEvent) => {
+    const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const res = await loginApi(email, password);
-        auth(res.access_token, res.refresh_token, res.user);
+
+        setIsLoading(true);
+        setErrorMessage('');
+
+        if (email && password) {
+            try {
+                const res = await loginApi(email, password);
+                auth(res.access_token, res.refresh_token, res.user);
+                setIsLoading(false);
+                router.navigate('/');
+            } catch (err: unknown) {
+                setIsLoading(false);
+                setErrorMessage(err.message);
+            }
+        } else {
+            setIsLoading(false);
+            setErrorMessage('Email and password is required.');
+        }
+
+        
     }
 
     return (
-        <form onSubmit={submit}>
-            <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-400 dark:bg-white/3 ">
-                <div className="px-6 py-5">
-                    <h3 className="text-base font-medium text-gray-400 text-gray-900">Login Form</h3>
-                </div>
-                <div className="p-4 border-t border-gray-100 dark:border-gray-400 sm:p-6">
-                    <div className="space-y-6">
-                        <form className=" undefined">
-                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                            <div>
-                                <div className="relative">
-                                    <input
-                                        placeholder="Email address"
-                                        className=" h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs 
-                                            placeholder:text-gray-400 focus:outline-hidden focus:ring-3  bg-transparent text-gray-400 border-gray-300 
-                                            focus:border-brand-300 focus:ring-brand-500/20"
-                                        type="email" 
-                                        value={email} 
-                                        onChange={e => setEmail(e.target.value)}
-                                      />
-                                </div>
-                            </div>
-                            <div className="col-span-full">
-                                <div className="relative">
-                                    <input 
-                                        placeholder="Password" 
-                                        className=" h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs 
-                                            placeholder:text-gray-400 focus:outline-hidden focus:ring-3  bg-transparent text-gray-400 border-gray-300 
-                                            focus:border-brand-300 focus:ring-brand-500/20" 
-                                        type="password" 
-                                        value={password} 
-                                        onChange={e => setPassword(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="col-span-full">
-                                <button 
-                                    className="inline-flex items-center justify-center gap-2 rounded-lg transition w-full px-4 py-3 
-                                        text-sm bg-blue-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300">Submit</button>
-                                </div>
-                            </div>
-                        </form>
+        <div className="relative overflow-hidden h-screen bg-lightprimary dark:bg-darkprimary">
+            <div className="flex h-full justify-center items-center px-4">
+                <CardBox className="md:w-[450px] w-full border-none">
+                    <div className="mx-auto mb-6">
+                        <h1>IP Management System</h1>
                     </div>
-                </div>
+                    <form className="mt-6" onSubmit={submit}>
+                        <div className="mb-4">
+                            <div className="mb-2 block">
+                                <Label htmlFor="Username">Username</Label>
+                            </div>
+                            <Input id="username" type="text" />
+                        </div>
+
+                        <div className="mb-4">
+                            <div className="mb-2 block">
+                                <Label htmlFor="userpwd">Password</Label>
+                            </div>
+                            <Input id="userpwd" type="password" />
+                        </div>
+
+                        <div className="flex justify-between my-5">
+                            <div className="flex items-center gap-2">
+                                <Checkbox id="accept" className="checkbox" />
+                                <Label htmlFor="accept" className="opacity-90 font-normal cursor-pointer">
+                                Remeber this Device
+                                </Label>
+                            </div>
+                            <Link to={'/'} className="text-primary text-sm font-medium">
+                                Forgot Password ?
+                            </Link>
+                        </div>
+
+                        { errorMessage.length > 0 && <p className="mt-2 text-sm text-red-600 dark:text-red-500">{ errorMessage }</p> }
+
+                        { isLoading ? (
+                            <button type="button" disabled className="w-full bg-blue-500 focus:outline-none font-medium text-sm px-5 py-2.5 text-center text-white">
+                                <svg aria-hidden="true" role="status" className="inline w-4 h-4 me-3 text-gray-200 animate-spin dark:text-gray-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                                    <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="#2b7fff"/>
+                                </svg>Logging In...
+                            </button>
+                        ) : (
+                            <button type="submit" className="w-full bg-blue-500 focus:outline-none font-medium text-sm px-5 py-2.5 text-center text-white select-none">Login</button>
+                        ) }
+                    </form>
+                </CardBox>  
             </div>
-        </form>
+        </div>
     )
 }
 
