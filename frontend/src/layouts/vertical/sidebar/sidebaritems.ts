@@ -32,41 +32,26 @@ export interface MenuItem {
 import { uniqueId } from 'lodash';
 
 const SidebarContent: MenuItem[] = [
-  // ==================== NON-PRO SECTIONS ====================
   {
     heading: 'Home',
     children: [
       {
         name: 'IP List',
-        icon: 'solar:carbon-ip',
+        icon: 'solar:laptop-2-linear',
         id: uniqueId(),
-        url: '/',
-        isPro: false,
+        url: '/'
       },
-    ],
-  },
-
-  {
-    heading: 'pages',
-    children: [
-      {
-        name: 'Tables',
-        icon: 'solar:server-linear',
+            {
+        name: 'User',
+        icon: 'solar:users-group-two-rounded-line-duotone',
         id: uniqueId(),
-        url: '/utilities/table',
+        url: '/test'
       },
-      {
-        name: 'Form',
-        icon: 'solar:document-add-linear',
+            {
+        name: 'Audit Logs',
+        icon: 'solar:notes-minimalistic-outline',
         id: uniqueId(),
-        url: '/utilities/form',
-      },
-      {
-        id: uniqueId(),
-        name: 'User Profile',
-        icon: 'solar:user-circle-linear',
-        url: '/user-profile',
-        isPro: false,
+        url: '/audit-logs'
       },
     ],
   }

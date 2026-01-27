@@ -4,7 +4,7 @@ import FullLogo from '../../shared/logo/FullLogo';
 import Profile from './Profile';
 import SidebarLayout from '../sidebar/Sidebar';
 
-import { Sheet, SheetContent, SheetTitle } from '../../../components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const Header = () => {

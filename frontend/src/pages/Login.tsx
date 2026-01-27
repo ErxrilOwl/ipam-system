@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { login as loginApi } from '../api/auth.api';
 import { useAuth } from "../auth/AuthContext"
-import CardBox from "../components/shared/CardBox";
-import { Label } from "../components/ui/label";
-import { Input } from "../components/ui/input";
-import { Checkbox } from "../components/ui/checkbox";
+import CardBox from "@/components/shared/CardBox";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { router } from "../routes/Router";
 
 const Login = () => {

@@ -13,7 +13,8 @@ export const login = async (email: string, password: string): Promise<AuthRespon
 }
 
 export const me = async (): Promise<User> => {
-    return await client.get('/auth/me');
+    const response = await client.get<User>('/auth/me');
+    return response.data;
 }
 
 export const refresh = async (refresh_token: string): Promise<AuthResponse> => {
