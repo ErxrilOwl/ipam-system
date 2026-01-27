@@ -110,7 +110,7 @@ body {
   --card-foreground: var(--link);
   --popover: var(--white);
   --popover-foreground: var(--link);
-  --primary: #5d87ff;
+  --primary: #59AC77;
   --primary-foreground: var(--white);
   --secondary: #49beff;
   --secondary-foreground: var(--white);
@@ -147,7 +147,7 @@ body {
   --bodytext: #5a6a85bf;
 
   /* Light Variants */
-  --lightprimary: color-mix(in oklab, var(--primary) 12%, transparent);
+  --lightprimary: color-mix(in oklab, var(--primary) 80%, transparent);
   --lightsecondary: color-mix(in oklab, var(--secondary) 12%, transparent);
   --lightsuccess: color-mix(in oklab, var(--success) 12%, transparent);
   --lightwarning: color-mix(in oklab, var(--warning) 12%, transparent);
