@@ -14,14 +14,19 @@ class IpAddress extends Model
         'user_name'
     ];
 
-    public function scopeFilter($query, $filters)
+    public function scopeFilter($query, array $filters)
     {
-        if ($filters['ip_address'] ?? false) {
-            $query->where('ip_address', 'LIKE', "%{$filters['ip_address']}%");
-        }
-
-        if ($filters['label'] ?? false) {
-            $query->where('label', 'LIKE', "%{$filters['label']}%");
-        }
+        return $query
+            ->when($filters['ip_address'] ?? null, function($q, $ipAddress) {
+                $q->where('ip_address', 'LIKE', "%{$ipAddress}%");
+            })
+            ->when($filters['label'] ?? null, function($q, $label) {
+                $q->where('label', 'LIKE', "%{$label}%");
+            })
+            ->when($filters['search'] ?? null, function($q, $search) {
+                $q
+                    ->where('ip_address', 'LIKE', "%{$search}%")
+                    ->where('label', 'LIKE', "%{$search}%");
+            });
     }
 }

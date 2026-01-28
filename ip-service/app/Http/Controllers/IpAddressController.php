@@ -14,10 +14,15 @@ class IpAddressController extends Controller
 {
     public function index(Request $request)
     {
+        $params = $request->all();
+        $sort = $params['sort'] ?? 'created_at';
+        $order = $params['order'] ?? 'DESC';
+        $limit = $params['limit'] ?? 10;
+
         return IpAddressResource::collection(
-            IpAddress::filter($request->only(['ip_address', 'label']))
-            ->paginate(10)
-        );
+            IpAddress::filter($params)
+            ->orderBy($sort, $order)
+            ->paginate($limit));
     }
 
     public function store(IpAddressFormRequest $request)

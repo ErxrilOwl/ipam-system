@@ -44,7 +44,7 @@ const IPList = () => {
 
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 10
+        pageSize: 1
     });
 
     const [sorting, setSorting] = useState<SortingState>([]);

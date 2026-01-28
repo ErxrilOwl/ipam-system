@@ -36,14 +36,14 @@ class AuditLog extends Model
         });
     }
 
-    public function scopeFilter($query, $filters)
+    public function scopeFilter($query, array $filters)
     {
-        if ($filters['user_id'] ?? false) {
-            $query->where('user_id', $filters['user_id']);
-        }
-
-        if ($filters['resource_id'] ?? false) {
-            $query->where('resource_id', $filters['resource_id']);
-        }
+        return $query
+            ->when($filters['user_id'] ?? null, function($q, $userId) {
+                $q->where('user_id', $userId);
+            })
+            ->when($filters['resource_id'] ?? null, function($q, $resourceId) {
+                $q->where('resource_id', $resourceId);
+            });
     }
 }
