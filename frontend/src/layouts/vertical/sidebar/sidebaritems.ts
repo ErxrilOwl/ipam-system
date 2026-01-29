@@ -33,24 +33,25 @@ import { uniqueId } from 'lodash';
 
 const SidebarContent: MenuItem[] = [
   {
+    id: 0,
     heading: 'Home',
     children: [
       {
+        id: uniqueId() + 1,
         name: 'IP List',
         icon: 'solar:laptop-2-linear',
-        id: uniqueId(),
         url: '/'
       },
-            {
+      {
+        id: uniqueId() + 2,
         name: 'User',
         icon: 'solar:users-group-two-rounded-line-duotone',
-        id: uniqueId(),
         url: '/test'
       },
-            {
+      {
+        id: uniqueId() + 3,
         name: 'Audit Logs',
         icon: 'solar:notes-minimalistic-outline',
-        id: uniqueId(),
         url: '/audit-logs'
       },
     ],

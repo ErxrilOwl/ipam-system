@@ -6,6 +6,7 @@ import { router } from "../routes/Router";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const auth = (access_token: string, refresh_token: string, user: User) => {
         if (!access_token || !refresh_token) {
@@ -27,15 +28,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const access = localStorage.getItem('access_token');
         if (access) {
             me().then(user => {
-                console.log(user)
                 setUser(user);
                 router.navigate('/');
             })
             .catch(() => {
                 router.navigate('/login');
-            });
+            })
+            .finally(() => {
+                setIsLoading(false);
+            })
         }
     }, []);
+
+    if (isLoading) {
+        return null;
+    }
 
     return (
         <AuthContext.Provider value={{ user, auth, logout }}>

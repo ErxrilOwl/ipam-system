@@ -24,6 +24,7 @@ const renderSidebarItems = (
   onClose?: () => void,
   isSubItem: boolean = false,
 ) => {
+  
   return items.map((item) => {
     const isSelected = currentPath === item?.url;
     const IconComp = item.icon || null;
@@ -70,7 +71,7 @@ const renderSidebarItems = (
       : `mt-0.5 text-sidebar-foreground dark:text-sidebar-foreground`;
 
     return (
-      <div onClick={onClose}>
+      <div key={item.id} onClick={onClose}>
         <AMMenuItem
           key={item.id}
           icon={iconElement}

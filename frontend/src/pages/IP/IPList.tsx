@@ -1,13 +1,25 @@
 import { getIPAddresses } from "@/api/ip.api";
 import CardBox from "@/components/shared/CardBox";
+import Search from "@/components/shared/Search";
+import { format } from 'date-fns'
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { IPAddress } from "@/types/ip";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type PaginationState, type SortingState } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, TriangleAlert, PlusIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-const columns: ColumnDef<IPAddress>[] = [
+type ActionColumnProps = {
+    onEdit: (ip: IPAddress) => void;
+    onDelete: (ip: IPAddress) => void;
+}
+
+const getColumns = ({
+    onEdit,
+    onDelete
+}: ActionColumnProps): ColumnDef<IPAddress>[] => [
     {
         accessorKey: "id",
         header: "ID",
@@ -31,10 +43,24 @@ const columns: ColumnDef<IPAddress>[] = [
     {
         accessorKey: "created_at",
         header: "Created At",
-        cell: (info) => info.getValue()
+        cell: (info) => {
+            const value = info.getValue() as string | Date;
+            return format(new Date(value), "MMM d, y HH:MM a");
+        }
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        enableColumnFilter: false,
+        cell: ({ row }) => (
+            <div className="flex gap-2">
+                <Button onClick={() => onEdit(row.original)}>Edit</Button>
+                <Button variant={'destructive'} className="text-white" onClick={() => onDelete(row.original)}>Delete</Button>
+            </div>
+        )
     }
 ];
-
 
 const IPList = () => {
     const [ipAddresses, setIpAddresses] = useState<IPAddress[]>([]);
@@ -44,7 +70,7 @@ const IPList = () => {
 
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
-        pageSize: 1
+        pageSize: 10
     });
 
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -52,7 +78,7 @@ const IPList = () => {
 
     const fetchData = async () => {
         setIsLoading(true);
-
+        setErrorMessage('');
         try {
             const res = await getIPAddresses({
                 page: pagination.pageIndex + 1,
@@ -78,6 +104,26 @@ const IPList = () => {
         }
     }
 
+    const handleSearch = (query: string) => {
+        setPagination((p) => ({ ...p, pageIndex: 0 }))
+        setSearch(query);
+    }
+
+    const handleEdit = (ip: IPAddress) => {
+        console.log(ip);
+    }
+
+    const handleDelete = (ip: IPAddress) => {
+        console.log(ip);
+    }
+
+    const columns = useMemo(() => {
+        return getColumns({
+            onEdit: handleEdit,
+            onDelete: handleDelete
+        })
+    }, [])
+
     useEffect(() => {
         fetchData();
     }, [pagination, sorting, search]);
@@ -99,41 +145,59 @@ const IPList = () => {
         getCoreRowModel: getCoreRowModel(),
       })
 
-
     return (
         <>
             <CardBox>
                 <div className="mb-6">
                     <div>
-                        <h5 className="card-title">IP Addresses</h5>
-                        <Input
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => {
-                                setPagination((p) => ({ ...p, pageIndex: 0 }))
-                                setSearch(e.target.value);
-                            }}
-                        />
+                        <h3 className="text-xl font-semibold mb-2">IP Addresses</h3>
+
+                        <div className="flex justify-between mt-2">
+                            <Search onSearch={handleSearch} />
+                            <Link to={'/'}>
+                                <Button variant="info">
+                                    <PlusIcon className="w-3 h-3" />Add
+                                </Button>
+                            </Link>
+                        </div>
+                        
                     </div>
                 </div>
+
+                {
+                    errorMessage && (
+                        <>
+                            <Alert variant="destructive" className="flex border-2 flex-col gap-2">
+                                <TriangleAlert className="w-4 h-4" />
+                                <AlertTitle>Something went wrong!</AlertTitle>
+                                <AlertDescription className="text-gray-900">{ errorMessage }</AlertDescription>
+                            </Alert>
+                        </>
+                    )
+                }
 
                 <div className="flex flex-col">
                     <div className="-m-1.5 overflow-x-auto">
                         <div className="p-1.5 min-w-full inline-block align-middle">
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto border rounded-md border-ld">
                                 <Table>
                                     <TableHeader>
                                         { table.getHeaderGroups().map(hg => (
-                                            <TableRow key={hg.id}>
+                                            <TableRow className="hover:bg-primary/10 transition-colors" key={hg.id}>
                                                 { hg.headers.map((header) => (
                                                     <TableHead 
                                                         key={header.id}
-                                                        className="text-base font-semibold py-3 whitespace-nowrap"
+                                                        className="text-base font-semibold p-4 whitespace-nowrap cursor-pointer select-none "
                                                         onClick={header.column.getToggleSortingHandler()}
                                                     >
                                                         { flexRender(header.column.columnDef.header, header.getContext()) }        
-                                                        {header.column.getIsSorted() === "asc" && " ↑"}
-                                                        {header.column.getIsSorted() === "desc" && " ↓"}
+                                                        {{
+                                                            asc: <ArrowUp className="ms-1 w-4 h-4 inline" />,
+                                                            desc: <ArrowDown className="ms-1 w-4 h-4 inline" />,
+                                                        }[header.column.getIsSorted() as string] ??
+                                                            (header.column.id !== 'action' ? (
+                                                            <ChevronsUpDown className="ms-1 w-2 h-2 inline" />
+                                                            ) : null)}
                                                     </TableHead>
                                                 )) }
                                             </TableRow>
@@ -161,10 +225,10 @@ const IPList = () => {
                                             </tr>
                                         ) : (
                                             table.getRowModel().rows.map((row) => (
-                                                <TableRow key={row.id}>
+                                                <TableRow className="hover:bg-primary/10 transition-colors group/row bg-transparentodd:bg-transparent even:bg-gray-100 dark:even:bg-gray-100" key={row.id}>
                                                     { row.getVisibleCells().map(cell => (
                                                         <TableCell key={cell.id} 
-                                                            className="whitespace-nowrap">
+                                                            className="p-4 px-6 whitespace-nowrap">
                                                             {flexRender(
                                                                 cell.column.columnDef.cell,
                                                                 cell.getContext()
@@ -178,7 +242,7 @@ const IPList = () => {
                                     </TableBody>
                                 </Table> 
 
-                                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-border dark:border-white/10">
+                                <div className="flex flex-col sm:flex-row items-center justify-end gap-4 p-4 border-t border-border dark:border-white/10">
                                     <div className="flex gap-2">
                                         <Button
                                             onClick={() => table.previousPage()}
