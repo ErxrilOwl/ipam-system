@@ -20,8 +20,6 @@ const authenticate = (req, res, next) => {
             exp: decoded.exp
         }
 
-        console.log(decoded);
-
         req.headers['x-user-id'] = decoded.sub;
         req.headers['x-user-name'] = decoded.name;
         req.headers['x-user-role'] = decoded.role;

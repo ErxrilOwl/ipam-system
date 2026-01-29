@@ -9,11 +9,13 @@ export const ProtectedRoute = ({
     children: JSX.Element;
     role?: 'admin'
 }) => {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) return null;
 
     if (!user) return <Navigate to="/login" />
-
-    if (role && user.role !== role) return <Navigate to="/" />;
+    
+    if (role && user.role !== role) return <Navigate to="/" replace />;
 
     return children;
 }

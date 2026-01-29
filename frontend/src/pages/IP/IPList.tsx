@@ -154,7 +154,7 @@ const IPList = () => {
 
                         <div className="flex justify-between mt-2">
                             <Search onSearch={handleSearch} />
-                            <Link to={'/'}>
+                            <Link to={'/ip/create'}>
                                 <Button variant="info">
                                     <PlusIcon className="w-3 h-3" />Add
                                 </Button>

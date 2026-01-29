@@ -4,6 +4,7 @@ import IPList from "../pages/IP/IPList";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
 import AuditLog from "../pages/AuditLog";
+import IPForm from "@/pages/IP/IPForm";
 
 export const router = createBrowserRouter([
     {
@@ -20,7 +21,15 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <IPList />
+                element: <IPList />,
+            },
+            {
+                path: "ip/create",
+                element: <IPForm />
+            },
+            {
+                path: "ip/:id/edit",
+                element: <IPForm />
             },
             {
                 path: 'audit-logs',

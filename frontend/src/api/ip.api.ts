@@ -8,6 +8,11 @@ export const getIPAddresses = async (params: Record<string, unknown>): Promise<P
     return response.data;
 }
 
+export const getIPAddress = async (id: number): Promise<IPAddress> => {
+    const response = await client.get<IPAddress>(`/ip-addresses/${id}`);
+    return response.data;
+}
+
 export const createIPAddress = async (payload: IPAddressPayload): Promise<IPAddress> => {
     const response = await client.post<IPAddress>('/ip-addresses', payload);
     return response.data;

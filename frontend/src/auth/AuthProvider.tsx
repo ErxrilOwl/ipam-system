@@ -26,10 +26,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         const access = localStorage.getItem('access_token');
+
         if (access) {
             me().then(user => {
                 setUser(user);
-                router.navigate('/');
             })
             .catch(() => {
                 router.navigate('/login');
@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setIsLoading(false);
             })
         }
+
     }, []);
 
     if (isLoading) {
@@ -45,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     return (
-        <AuthContext.Provider value={{ user, auth, logout }}>
+        <AuthContext.Provider value={{ user, auth, logout, isLoading }}>
             { children }
         </AuthContext.Provider>
     )
