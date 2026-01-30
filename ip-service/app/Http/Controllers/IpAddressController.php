@@ -108,11 +108,17 @@ class IpAddressController extends Controller
         }
     }
 
-    public function destroy(Request $request, IpAddress $ipAddress)
+    public function destroy(Request $request, $ipAddress)
     {
         DB::beginTransaction();
 
         try {
+            $ipAddress = IpAddress::find($ipAddress);
+
+            if (!$ipAddress) {
+                return response()->json(['message' => 'IP address not found!'], 404);
+            }
+
             if ($request->header('x-user-role') !== 'admin') {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
@@ -132,7 +138,7 @@ class IpAddressController extends Controller
 
             return response()->json(['message' => 'IP Adresses successfully deleted.']);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Something went wrong.'], 500);
+            return response()->json(['message' => 'Something went wrong.'], 500);
         }
     }
 }
