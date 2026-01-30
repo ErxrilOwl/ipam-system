@@ -8,6 +8,7 @@ Route::group(['middleware' => 'gateway.auth'], function() {
     Route::group(['prefix' => 'ip-addresses'], function() {
         Route::get('/', [IpAddressController::class, 'index']);
         Route::post('/', [IpAddressController::class, 'store']);
+        Route::get('/{ipAddress}', [IpAddressController::class, 'get']);
         Route::put('/{ipAddress}', [IpAddressController::class, 'update']);
         Route::delete('/{ipAddress}', [IpAddressController::class, 'destroy']);
     });

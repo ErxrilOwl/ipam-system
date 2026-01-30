@@ -1,5 +1,5 @@
 import client from './client';
-import type { IPAddress, IPAddressPayload } from '../types/ip';
+import type { IPAddress, IPAddressPayload, IPAddressResponse } from '../types/ip';
 import type { PaginatedResponse } from '@/types/pagination';
 
 
@@ -13,13 +13,13 @@ export const getIPAddress = async (id: number): Promise<IPAddress> => {
     return response.data;
 }
 
-export const createIPAddress = async (payload: IPAddressPayload): Promise<IPAddress> => {
-    const response = await client.post<IPAddress>('/ip-addresses', payload);
+export const createIPAddress = async (payload: IPAddressPayload): Promise<IPAddressResponse> => {
+    const response = await client.post<IPAddressResponse>('/ip-addresses', payload);
     return response.data;
 }
 
-export const updateIPAddress = async (id: number, payload: IPAddressPayload): Promise<IPAddress> => {
-    const response = await client.put<IPAddress>(`/ip-addresses/${id}`, payload);
+export const updateIPAddress = async (id: number, payload: IPAddressPayload): Promise<IPAddressResponse> => {
+    const response = await client.put<IPAddressResponse>(`/ip-addresses/${id}`, payload);
     return response.data;
 }
 

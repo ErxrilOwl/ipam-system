@@ -5,8 +5,9 @@ import { me } from '../api/auth.api';
 import { router } from "../routes/Router";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const hasToken = !!localStorage.getItem('access_token');
     const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(hasToken);
 
     const auth = (access_token: string, refresh_token: string, user: User) => {
         if (!access_token || !refresh_token) {
@@ -25,10 +26,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     useEffect(() => {
-        const access = localStorage.getItem('access_token');
+        if (!hasToken) return;
 
-        if (access) {
-            me().then(user => {
+        me()
+            .then(user => {
                 setUser(user);
             })
             .catch(() => {
@@ -36,10 +37,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             })
             .finally(() => {
                 setIsLoading(false);
-            })
-        }
+            });
+    }, [hasToken]);
 
-    }, []);
 
     if (isLoading) {
         return null;

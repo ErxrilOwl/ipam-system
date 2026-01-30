@@ -5,6 +5,7 @@ const ipController = require('../controllers/ip');
 const authMiddleware = require('../middleware/auth');
 
 router.get('/', authMiddleware, ipController.getIpAddresses);
+router.get('/:id', authMiddleware, ipController.getIpAddress);
 router.post('/', authMiddleware, ipController.createIPAddress);
 router.put('/:id', authMiddleware, ipController.updateIPAddress);
 router.delete('/:id', authMiddleware, ipController.deleteIPAddress);

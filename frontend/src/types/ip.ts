@@ -8,6 +8,11 @@ export interface IPAddress {
     updated_at: string
 }
 
+export interface IPAddressResponse {
+    data: IPAddress,
+    message: string
+}
+
 export interface IPAddressPayload {    
     ip_address: string,
     label: string,

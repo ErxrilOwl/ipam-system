@@ -10,6 +10,8 @@ import { ArrowDown, ArrowUp, ChevronsUpDown, TriangleAlert, PlusIcon } from "luc
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { router } from "@/routes/Router";
 
 type ActionColumnProps = {
     onEdit: (ip: IPAddress) => void;
@@ -110,7 +112,7 @@ const IPList = () => {
     }
 
     const handleEdit = (ip: IPAddress) => {
-        console.log(ip);
+        router.navigate(`ip/${ip.id}/edit`);
     }
 
     const handleDelete = (ip: IPAddress) => {
@@ -211,7 +213,7 @@ const IPList = () => {
                                                 colSpan={columns.length}
                                                 className="py-6 text-center text-sm"
                                             >
-                                                Loading...
+                                                <Skeleton>Loading</Skeleton>
                                             </td>
                                             </tr>
                                         ) : table.getRowModel().rows.length === 0 ? (

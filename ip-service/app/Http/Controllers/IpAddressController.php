@@ -25,6 +25,11 @@ class IpAddressController extends Controller
             ->paginate($limit));
     }
 
+    public function get(IpAddress $ipAddress)
+    {
+        return response()->json(new IpAddressResource($ipAddress));
+    }
+
     public function store(IpAddressFormRequest $request)
     {
         DB::beginTransaction();
