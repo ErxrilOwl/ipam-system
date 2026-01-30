@@ -23,7 +23,7 @@ export const updateIPAddress = async (id: number, payload: IPAddressPayload): Pr
     return response.data;
 }
 
-export const deleteIPAddress = async (id: number): Promise<IPAddress> => {
-    const response = await client.delete<IPAddress>(`/ip-addresses/${id}`);
+export const deleteIPAddress = async (id: number): Promise<{ message: string }> => {
+    const response = await client.delete<{ message: string }>(`/ip-addresses/${id}`);
     return response.data;
 }

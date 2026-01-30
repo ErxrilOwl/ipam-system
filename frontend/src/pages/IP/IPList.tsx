@@ -1,4 +1,4 @@
-import { getIPAddresses } from "@/api/ip.api";
+import { deleteIPAddress, getIPAddresses } from "@/api/ip.api";
 import CardBox from "@/components/shared/CardBox";
 import Search from "@/components/shared/Search";
 import { format } from 'date-fns'
@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { IPAddress } from "@/types/ip";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type PaginationState, type SortingState } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronsUpDown, TriangleAlert, PlusIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { router } from "@/routes/Router";
+import { toast, Toaster } from 'react-hot-toast';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type ActionColumnProps = {
     onEdit: (ip: IPAddress) => void;
@@ -68,7 +69,8 @@ const IPList = () => {
     const [ipAddresses, setIpAddresses] = useState<IPAddress[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [selectedIp, setSelectedIp] = useState<IPAddress | null>(null);
+    const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
 
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
@@ -80,7 +82,6 @@ const IPList = () => {
 
     const fetchData = async () => {
         setIsLoading(true);
-        setErrorMessage('');
         try {
             const res = await getIPAddresses({
                 page: pagination.pageIndex + 1,
@@ -97,9 +98,9 @@ const IPList = () => {
             setIsLoading(false);
 
             if (err instanceof Error) {
-                setErrorMessage(err.message);
+                toast.error(err.message);
             } else {
-                setErrorMessage('Something went wrong');
+                toast.error('Something went wrong');
             }
         } finally {
             setIsLoading(false);
@@ -117,6 +118,29 @@ const IPList = () => {
 
     const handleDelete = (ip: IPAddress) => {
         console.log(ip);
+        setSelectedIp(ip);
+        setOpenConfirmDelete(true);
+    }
+
+    const onDelete = async () => {
+        setIsLoading(true);
+
+        try {
+            const res = await deleteIPAddress(Number(selectedIp?.id));
+            toast.success(res.message)
+            setIsLoading(false);
+        } catch (err) {
+            setIsLoading(false);
+
+            if (err instanceof Error) {
+                toast.error(err.message)
+            } else {
+                toast.error('Something went wrong')
+            }
+        } finally {
+            setOpenConfirmDelete(false);
+            setSelectedIp(null);
+        }
     }
 
     const columns = useMemo(() => {
@@ -130,26 +154,42 @@ const IPList = () => {
         fetchData();
     }, [pagination, sorting, search]);
 
-      const table = useReactTable({
+    const table = useReactTable({
         data: ipAddresses,
         columns,
         state: {
-          pagination,
-          sorting,
+            pagination,
+            sorting,
         },
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
-    
         manualPagination: true,
         manualSorting: true,
-    
         pageCount: Math.ceil(total / pagination.pageSize),
         getCoreRowModel: getCoreRowModel(),
-      })
+    });
 
     return (
         <>
             <CardBox>
+                <Toaster position="top-right"/>
+                <Dialog open={openConfirmDelete} onOpenChange={setOpenConfirmDelete}>
+                    <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>Delete IP</DialogTitle>
+                        <DialogDescription>Are you sure you want to delete this IP?</DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter className="flex gap-2 sm:justify-end">
+                        <Button variant={'destructive'} onClick={onDelete} className="rounded-md">Delete</Button>
+                        <Button variant={'outline'}  onClick={() => {
+                            setOpenConfirmDelete(false);
+                            setSelectedIp(null);
+                        }} className="rounded-md">Cancel</Button>
+                    </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
                 <div className="mb-6">
                     <div>
                         <h3 className="text-xl font-semibold mb-2">IP Addresses</h3>
@@ -165,18 +205,6 @@ const IPList = () => {
                         
                     </div>
                 </div>
-
-                {
-                    errorMessage && (
-                        <>
-                            <Alert variant="destructive" className="flex border-2 flex-col gap-2">
-                                <TriangleAlert className="w-4 h-4" />
-                                <AlertTitle>Something went wrong!</AlertTitle>
-                                <AlertDescription className="text-gray-900">{ errorMessage }</AlertDescription>
-                            </Alert>
-                        </>
-                    )
-                }
 
                 <div className="flex flex-col">
                     <div className="-m-1.5 overflow-x-auto">

@@ -10,8 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
 import { Textarea } from "@/components/ui/textarea";
 import Loader from "@/components/ui/loader";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader } from "@/components/ui/dialog";
-import { DialogTitle } from "@radix-ui/react-dialog";
+import { toast, Toaster } from "react-hot-toast";
 
 const isValidIP = (value: string) => {
     const ipv4 =
@@ -36,9 +35,6 @@ const IPForm = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
-    const [openAlert, setOpenAlert] = useState(false);
-    const [alertTitle, setAlertTitle] = useState('');
-    const [alertMessage, setAlertMessage] = useState('');
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -60,11 +56,11 @@ const IPForm = () => {
                 });
             } catch (err) {
                 setIsLoading(false);
-                setAlertTitle('Error');
+                
                 if (err instanceof Error) {
-                    setAlertMessage(err.message);
+                    toast.error(err.message);
                 } else {
-                    setAlertMessage('Something went wrong');
+                    toast.error('Something went wrong');
                 }
             }
         }
@@ -79,47 +75,32 @@ const IPForm = () => {
             let res = null;
             if (isEditMode) {
                 res = await updateIPAddress(Number(id), values);
+                form.reset({
+                    ip_address: res.data.ip_address,
+                    label: res.data.label,
+                    comment: res.data.comment ?? ""
+                });
             } else {
                 res = await createIPAddress(values);
+                form.reset();
             }
 
             setIsLoading(false);
-            form.reset();
-            setOpenAlert(true);
-            setAlertTitle('Success');
-            setAlertMessage(res.message);
+            toast.success(res.message);
         } catch (err){
             setIsLoading(false);
-            setAlertTitle('Error');
             if (err instanceof Error) {
-                setAlertMessage(err.message);
+                toast.error(err.message);
             } else {
-                setAlertMessage('Something went wrong');
+                toast.error('Something went wrong');
             }
         }
     });
 
-    const handleAlertButton = (e: React.FormEvent<HTMLButtonElement>) => {
-        e.preventDefault();                
-        setOpenAlert(false);
-    }
-    
     return (
         <>
-            <Dialog open={openAlert} onOpenChange={setOpenAlert}>
-                <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>{alertTitle}</DialogTitle>
-                    <DialogDescription>{alertMessage}</DialogDescription>
-                </DialogHeader>
-
-                <DialogFooter className="flex gap-2 sm:justify-end">
-                    <Button  onClick={handleAlertButton} className="rounded-md">Okay</Button>
-                </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
             <CardBox>
+                <Toaster position="top-right" />
                 <div className="mb-6">
                     <div>
                         <h3 className="text-xl font-semibold mb-2">{ isEditMode ? "Edit IP Address" : "Create IP Address" }</h3>
