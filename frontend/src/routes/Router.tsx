@@ -6,6 +6,7 @@ import MainLayout from "../layouts/MainLayout";
 import IPForm from "@/pages/IP/IPForm";
 import AuditLogList from "../pages/AuditLog/AuditLogList";
 import AuditLogView from "@/pages/AuditLog/AuditLogView";
+import Error from "@/pages/Error";
 
 export const router = createBrowserRouter([
     {
@@ -47,7 +48,11 @@ export const router = createBrowserRouter([
                         <AuditLogView />
                     </ProtectedRoute>
                 )
-            }
+            },
         ]
+    },
+    {
+        path: '*',
+        element: <Error />
     }
 ]);

@@ -93,8 +93,8 @@ class IpAddressController extends Controller
                 'UPDATED_IP',
                 'ip_address',
                 $ipAddress->id,
-                $before,
-                $ipAddress->toArray()
+                json_encode($before),
+                json_encode($ipAddress->toArray())
             );
 
             DB::commit();
