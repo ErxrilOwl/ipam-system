@@ -4,13 +4,20 @@ import { format } from 'date-fns'
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type PaginationState, type SortingState } from "@tanstack/react-table";
-import { ArrowDown, ArrowUp, ChevronsUpDown, PlusIcon } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, Toaster } from 'react-hot-toast';
 import type { AuditLogItem } from "@/types/audit-log";
 import { getAuditLogs } from "@/api/audit-log.api";
+import { router } from "@/routes/Router";
+import BreadcrumbComp from "@/layouts/shared/breadcrumbs";
+
+const BCrumb = [
+  {
+    title: 'Audit Logs',
+  },
+];
 
 type ActionColumnProps = {
     onView: (auditLog: AuditLogItem) => void;
@@ -70,7 +77,7 @@ const getColumns = ({
     }
 ];
 
-const AuditLogs = () => {
+const AuditLogList = () => {
     const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +87,12 @@ const AuditLogs = () => {
         pageSize: 10
     });
 
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([
+        {
+            id: "created_at",
+            desc: true
+        }
+    ]);
     const [search, setSearch] = useState("");
 
     const fetchData = async () => {
@@ -93,7 +105,7 @@ const AuditLogs = () => {
                 sort: sorting[0]?.id,
                 order: sorting[0]?.desc ? "desc" : "asc",
             });
-            console.log(res);
+            
             setAuditLogs(res.data);
             setTotal(res.meta.total);
         } catch (err) {
@@ -114,8 +126,8 @@ const AuditLogs = () => {
         setSearch(query);
     }
 
-    const handleView = () => {
-        console.log('VIEW');
+    const handleView = (auditLog: AuditLogItem) => {
+        router.navigate(`/audit-logs/${auditLog.id}`);
     }
 
     useEffect(() => {
@@ -145,27 +157,20 @@ const AuditLogs = () => {
 
     return (
         <>
+            <BreadcrumbComp title="Audit Logs" items={BCrumb} />
             <CardBox>
                 <Toaster position="top-right"/>
 
                 <div className="mb-6">
                     <div>
-                        <h3 className="text-xl font-semibold mb-2">IP Addresses</h3>
-
-                        <div className="flex justify-between mt-2">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <Search onSearch={handleSearch} />
-                            <Link to={'/ip/create'}>
-                                <Button variant="info">
-                                    <PlusIcon className="w-3 h-3" />Add
-                                </Button>
-                            </Link>
                         </div>
-                        
                     </div>
                 </div>
 
-                <div className="flex flex-col">
-                    <div className="-m-1.5 overflow-x-auto">
+                <div className="flex flex-col min-w-0">
+                    <div className="-m-1.5 overflow-x-auto min-w-0">
                         <div className="p-1.5 min-w-full inline-block align-middle">
                             <div className="overflow-x-auto border rounded-md border-ld">
                                 <Table>
@@ -255,4 +260,4 @@ const AuditLogs = () => {
     )
 }
 
-export default AuditLogs;
+export default AuditLogList;

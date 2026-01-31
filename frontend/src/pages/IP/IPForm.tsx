@@ -11,6 +11,17 @@ import { Label } from "@radix-ui/react-label";
 import { Textarea } from "@/components/ui/textarea";
 import Loader from "@/components/ui/loader";
 import { toast, Toaster } from "react-hot-toast";
+import BreadcrumbComp from "@/layouts/shared/breadcrumbs";
+
+const BCrumb = [
+  {
+    to: '/',
+    title: 'IP Addresses',
+  },
+  {
+    title: 'IP Address Form',
+  },
+];
 
 const isValidIP = (value: string) => {
     const ipv4 =
@@ -99,12 +110,11 @@ const IPForm = () => {
 
     return (
         <>
+            <BreadcrumbComp title={ isEditMode ? "Edit IP Address" : "Create IP Address" } items={BCrumb} />
             <CardBox>
                 <Toaster position="top-right" />
                 <div className="mb-6">
                     <div>
-                        <h3 className="text-xl font-semibold mb-2">{ isEditMode ? "Edit IP Address" : "Create IP Address" }</h3>
-
                         <FormProvider {...form}>
                             <form onSubmit={onSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">

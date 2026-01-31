@@ -13,6 +13,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { router } from "@/routes/Router";
 import { toast, Toaster } from 'react-hot-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import BreadcrumbComp from "@/layouts/shared/breadcrumbs";
+
+const BCrumb = [
+  {
+    title: 'IP Addresses',
+  }
+];
 
 type ActionColumnProps = {
     onEdit: (ip: IPAddress) => void;
@@ -77,7 +84,12 @@ const IPList = () => {
         pageSize: 10
     });
 
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>([
+        {
+            id: "created_at",
+            desc: true
+        }
+    ]);
     const [search, setSearch] = useState("");
 
     const fetchData = async () => {
@@ -171,6 +183,7 @@ const IPList = () => {
 
     return (
         <>
+            <BreadcrumbComp title="IP Addresses" items={BCrumb} />
             <CardBox>
                 <Toaster position="top-right"/>
                 <Dialog open={openConfirmDelete} onOpenChange={setOpenConfirmDelete}>
@@ -192,22 +205,19 @@ const IPList = () => {
 
                 <div className="mb-6">
                     <div>
-                        <h3 className="text-xl font-semibold mb-2">IP Addresses</h3>
-
-                        <div className="flex justify-between mt-2">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <Search onSearch={handleSearch} />
-                            <Link to={'/ip/create'}>
-                                <Button variant="info">
+                            <Link to={'/ip/create'} className="mt-auto sm:mt-0 self-end sm:self-auto">
+                                <Button variant="info" className="flex items-center gap-1">
                                     <PlusIcon className="w-3 h-3" />Add
                                 </Button>
                             </Link>
                         </div>
-                        
                     </div>
                 </div>
 
-                <div className="flex flex-col">
-                    <div className="-m-1.5 overflow-x-auto">
+                <div className="flex flex-col min-w-0">
+                    <div className="-m-1.5 overflow-x-auto min-w-0">
                         <div className="p-1.5 min-w-full inline-block align-middle">
                             <div className="overflow-x-auto border rounded-md border-ld">
                                 <Table>

@@ -3,8 +3,9 @@ import Login from "../pages/Login";
 import IPList from "../pages/IP/IPList";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 import MainLayout from "../layouts/MainLayout";
-import AuditLog from "../pages/AuditLogs";
 import IPForm from "@/pages/IP/IPForm";
+import AuditLogList from "../pages/AuditLog/AuditLogList";
+import AuditLogView from "@/pages/AuditLog/AuditLogView";
 
 export const router = createBrowserRouter([
     {
@@ -35,7 +36,15 @@ export const router = createBrowserRouter([
                 path: 'audit-logs',
                 element: (
                     <ProtectedRoute role="admin">
-                        <AuditLog />
+                        <AuditLogList />
+                    </ProtectedRoute>
+                )
+            },
+            {
+                path: 'audit-logs/:id',
+                element: (
+                    <ProtectedRoute role="admin">
+                        <AuditLogView />
                     </ProtectedRoute>
                 )
             }
