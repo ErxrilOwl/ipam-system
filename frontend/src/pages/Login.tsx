@@ -30,7 +30,7 @@ const Login = () => {
                 router.navigate('/');
             } catch (err: unknown) {
                 setIsLoading(false);
-                console.log(err);
+                console.log('CAT', err);
                 if (err instanceof Error) {
                     setErrorMessage(err.message);
                 } else {

@@ -27,10 +27,13 @@ const AuditLogView = () => {
 
         const fetchData = async () => {
             try {
-                const data = await getAuditLog(Number(id));
-                console.log(data);
-                console.log(data.before)
-                setData(data);
+                const resData = await getAuditLog(Number(id));
+                
+                setData({
+                    ...resData,
+                    before: resData.before ? JSON.stringify(resData.before, null, 2) : '',
+                    after: resData.after ? JSON.stringify(resData.after, null, 2) : ''
+                });
             } catch (err) {
                 if (err instanceof Error) {
                     toast.error(err.message);
@@ -43,6 +46,14 @@ const AuditLogView = () => {
         fetchData();
     }, [id]);
 
+    if (!data) {
+        return (
+            <>
+            <BreadcrumbComp title="View Audit Log" items={BCrumb} />
+            <CardBox>Loading audit log…</CardBox>
+            </>
+        );
+    }
 
     return (
     <>
@@ -55,7 +66,7 @@ const AuditLogView = () => {
                         <div className="mb-2 block">
                             <Label>ID</Label>
                         </div>
-                        <Input readOnly value={data?.id} />
+                        <Input readOnly value={data?.id?.toString() ?? ''} />
                     </div>
                 </div>
 
@@ -64,45 +75,45 @@ const AuditLogView = () => {
                         <div className="mb-2 block">
                             <Label>User ID</Label>
                         </div>
-                        <Input readOnly value={data?.user_id} />
+                        <Input readOnly value={data?.user_id?.toString() ?? ''} />
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label>User Name</Label>
                         </div>
-                        <Input readOnly value={data?.user_name} />
+                        <Input readOnly value={data?.user_name?.toString() ?? ''} />
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label>User Role</Label>
                         </div>
-                        <Input readOnly value={data?.user_role} />
+                        <Input readOnly value={data?.user_role?.toString() ?? ''} />
                     </div>
 
                     <div>
                         <div className="mb-2 block">
                             <Label>Session ID</Label>
                         </div>
-                        <Input readOnly value={data?.session_id} />
+                        <Input readOnly value={data?.session_id?.toString() ?? ''} />
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label>User IP Address</Label>
                         </div>
-                        <Input readOnly value={data?.ip_address} />
+                        <Input readOnly value={data?.ip_address?.toString() ?? ''} />
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label>User Agent</Label>
                         </div>
-                        <Input readOnly value={data?.user_agent} />
+                        <Input readOnly value={data?.user_agent?.toString() ?? ''} />
                     </div>
 
                     <div>
                         <div className="mb-2 block">
                             <Label>Created At</Label>
                         </div>
-                        <Input readOnly value={data?.created_at} />
+                        <Input readOnly value={data?.created_at?.toString() ?? ''} />
                     </div>
                 </div>
 
@@ -113,19 +124,19 @@ const AuditLogView = () => {
                         <div className="mb-2 block">
                             <Label>Action</Label>
                         </div>
-                        <Input readOnly value={data?.action} />
+                        <Input readOnly value={data?.action?.toString() ?? ''} />
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label>Resource Type</Label>
                         </div>
-                        <Input readOnly value={data?.resource_type} />
+                        <Input readOnly value={data?.resource_type?.toString() ?? ''} />
                     </div>
                     <div>
                         <div className="mb-2 block">
                             <Label>Resource ID</Label>
                         </div>
-                        <Input readOnly value={data?.resource_id} />
+                        <Input readOnly value={data?.resource_id?.toString() ?? ''} />
                     </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">

@@ -7,7 +7,7 @@ exports.login = async (req, res) => {
         
         res.json(response.data);
     } catch (err) {
-        console.log(err);
+        console.log('CATCH ', err);
         res.status(401).json(err.response?.data || { message: 'Login failed' });
     }
 }

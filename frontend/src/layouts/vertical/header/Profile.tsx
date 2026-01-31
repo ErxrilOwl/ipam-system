@@ -1,6 +1,6 @@
 'use client';
 
-import { Link } from 'react-router';
+import { redirect } from 'react-router';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,9 +10,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/auth/AuthContext';
+import { logout } from '@/api/auth.api';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, logout: authLogout } = useAuth();
+
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        authLogout();
+        return redirect('/');
+      })
+  }
 
   return (
     <div className="relative group/menu ps-1 sm:ps-15 shrink-0">
@@ -50,8 +59,9 @@ const Profile = () => {
               asChild
               variant="outline"
               className="w-full rounded-md"
+              onClick={handleLogout}
             >
-              <Link to="/auth/auth2/login">Logout</Link>
+              Logout
             </Button>
           </div>
         </DropdownMenuContent>
