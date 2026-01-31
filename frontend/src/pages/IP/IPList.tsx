@@ -271,25 +271,24 @@ const IPList = () => {
                                         )}
                                     </TableBody>
                                 </Table> 
-
-                                <div className="flex flex-col sm:flex-row items-center justify-end gap-4 p-4 border-t border-border dark:border-white/10">
-                                    <div className="flex gap-2">
-                                        <Button
-                                            onClick={() => table.previousPage()}
-                                            disabled={!table.getCanPreviousPage()}
-                                            variant={'secondary'}
-                                        >
-                                            Previous
-                                        </Button>
-                                        <Button
-                                            onClick={() => table.nextPage()}
-                                            disabled={!table.getCanNextPage()}
-                                        >
-                                            Next
-                                        </Button>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center justify-end gap-4 p-4 border-t border-border dark:border-white/10">
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                                variant={'secondary'}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                Next
+                            </Button>
                         </div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AuditLogResource;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
@@ -9,8 +10,20 @@ class AuditLogController extends Controller
 {
     public function index(Request $request)
     {
-        return AuditLog::filter($request->only(['user_id', 'resource_id']))
-            ->orderByDesc('created_at')
-            ->paginate(10);
+        $params = $request->all();
+        $sort = $params['sort'] ?? 'created_at';
+        $order = $params['order'] ?? 'DESC';
+        $limit = $params['limit'] ?? 10;
+
+        return AuditLogResource::collection(
+            AuditLog::with(['ipAddress'])->filter($params)
+            ->orderBy($sort, $order)
+            ->paginate($limit)
+        );
+    }
+
+    public function get(AuditLog $auditLog)
+    {
+        return response()->json($auditLog);
     }
 }

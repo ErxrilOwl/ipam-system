@@ -36,14 +36,34 @@ class AuditLog extends Model
         });
     }
 
+    public function ipAddress()
+    {
+        return $this->belongsTo(IpAddress::class, 'resource_id', 'id');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         return $query
-            ->when($filters['user_id'] ?? null, function($q, $userId) {
-                $q->where('user_id', $userId);
+            ->when($filters['user_name'] ?? null, function($q, $userName) {
+                $q->where('user_name', 'LIKE', "%{$userName}%");
             })
-            ->when($filters['resource_id'] ?? null, function($q, $resourceId) {
-                $q->where('resource_id', $resourceId);
+            ->when($filters['action'] ?? null, function($q, $action) {
+                $q->where('action', $action);
+            })
+            ->when($filters['resource_type'] ?? null, function($q, $resource_type) {
+                $q->where('resource_type', $resource_type);
+            })
+            ->when($filters['ip_address'] ?? null, function($q, $ipAddress) {
+                $q->whereHas('ipAddress', function ($qq) use($ipAddress) {
+                    $qq->where('ip_address', 'LIKE', "%{$ipAddress}%");
+                });
+            })
+            ->when($filters['search'] ?? null, function($q, $search) {
+                $q->whereHas('ipAddress', function ($qq) use($search) {
+                    $qq->where('ip_address', 'LIKE', "%{$search}%");
+                })
+                ->orWhere('user_name', 'LIKE', "%{$search}%")
+                ->orWhere('action', $search);
             });
     }
 }

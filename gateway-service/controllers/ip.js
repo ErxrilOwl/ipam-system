@@ -7,7 +7,7 @@ exports.getIpAddresses = async (req, res) => {
         const response = await ipService.getIPAddresses(queryParams, ipUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to IP addresses' });
+        res.status(401).json(err.response?.data || { message: 'Failed to fetch IP addresses' });
     }
 }
 
@@ -17,7 +17,7 @@ exports.getIpAddress = async (req, res) => {
         const response = await ipService.getIPAddress(id, ipUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to get IP Address' });
+        res.status(401).json(err.response?.data || { message: 'Failed to fetch IP Address' });
     }
 }
 
@@ -26,7 +26,7 @@ exports.createIPAddress = async (req, res) => {
         const response = await ipService.createIPAddress(req.body, ipUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to create IP address' });
+        res.status(401).json(err.response?.data || { message: 'Failed to create IP address' });
     }
 }
 
@@ -37,7 +37,7 @@ exports.updateIPAddress = async (req, res) => {
         const response = await ipService.updateIPAddress(id, body, ipUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to update IP address' });
+        res.status(401).json(err.response?.data || { message: 'Failed to update IP address' });
     }
 }
 
@@ -47,7 +47,7 @@ exports.deleteIPAddress = async (req, res) => {
         const response = await ipService.deleteIPAddress(id, ipUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to create IP address' });
+        res.status(401).json(err.response?.data || { message: 'Failed to create IP address' });
     }
 }
 
@@ -57,6 +57,16 @@ exports.getAuditLogs = async (req, res) => {
         const response = await ipService.getAuditLogs(queryParams, ipUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to audit logs' });
+        res.status(401).json(err.response?.data || { message: 'Failed to fetch audit logs' });
+    }
+}
+
+exports.getAuditLog = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const response = await ipService.getAuditLog(id, ipUtil.getAuthHeaders(req));
+        res.json(response.data);
+    } catch (err) {
+        res.status(401).json(err.response?.data || { message: 'Failed to fetch audit log' });
     }
 }

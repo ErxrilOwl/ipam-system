@@ -9,33 +9,44 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast, Toaster } from 'react-hot-toast';
-import type { AuditLog } from "@/types/audit-log";
+import type { AuditLogItem } from "@/types/audit-log";
+import { getAuditLogs } from "@/api/audit-log.api";
 
 type ActionColumnProps = {
-    onView: (auditLog: AuditLog) => void;
+    onView: (auditLog: AuditLogItem) => void;
 }
 
 const getColumns = ({
     onView
-}: ActionColumnProps): ColumnDef<AuditLog>[] => [
+}: ActionColumnProps): ColumnDef<AuditLogItem>[] => [
     {
         accessorKey: "id",
         header: "ID",
         cell: (info) => info.getValue()
     },
     {
-        accessorKey: "ip_address",
-        header: "IP Address",
+        accessorKey: "user_name",
+        header: "User",
         cell: (info) => info.getValue()
     },
     {
-        accessorKey: "label",
-        header: "Label",
+        accessorKey: "user_role",
+        header: "Role",
         cell: (info) => info.getValue()
     },
     {
-        accessorKey: "created_by",
-        header: "Created By",
+        accessorKey: "action",
+        header: "Action",
+        cell: (info) => info.getValue()
+    },
+    {
+        accessorKey: "resource_type",
+        header: "Resource Type",
+        cell: (info) => info.getValue()
+    },
+    {
+        accessorKey: "resource_id",
+        header: "Resource ID",
         cell: (info) => info.getValue()
     },
     {
@@ -60,7 +71,7 @@ const getColumns = ({
 ];
 
 const AuditLogs = () => {
-    const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+    const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     
@@ -75,16 +86,16 @@ const AuditLogs = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            // const res = await getIPAddresses({
-            //     page: pagination.pageIndex + 1,
-            //     limit: pagination.pageSize,
-            //     search,
-            //     sort: sorting[0]?.id,
-            //     order: sorting[0]?.desc ? "desc" : "asc",
-            // });
-            // console.log(res);
-            // setAuditLogs(res.data);
-            // setTotal(res.meta.total);
+            const res = await getAuditLogs({
+                page: pagination.pageIndex + 1,
+                limit: pagination.pageSize,
+                search,
+                sort: sorting[0]?.id,
+                order: sorting[0]?.desc ? "desc" : "asc",
+            });
+            console.log(res);
+            setAuditLogs(res.data);
+            setTotal(res.meta.total);
         } catch (err) {
             setIsLoading(false);
 
@@ -218,25 +229,24 @@ const AuditLogs = () => {
                                         )}
                                     </TableBody>
                                 </Table> 
-
-                                <div className="flex flex-col sm:flex-row items-center justify-end gap-4 p-4 border-t border-border dark:border-white/10">
-                                    <div className="flex gap-2">
-                                        <Button
-                                            onClick={() => table.previousPage()}
-                                            disabled={!table.getCanPreviousPage()}
-                                            variant={'secondary'}
-                                        >
-                                            Previous
-                                        </Button>
-                                        <Button
-                                            onClick={() => table.nextPage()}
-                                            disabled={!table.getCanNextPage()}
-                                        >
-                                            Next
-                                        </Button>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center justify-end gap-4 p-4 border-t border-border dark:border-white/10">
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                                variant={'secondary'}
+                            >
+                                Previous
+                            </Button>
+                            <Button
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                Next
+                            </Button>
                         </div>
                     </div>
                 </div>

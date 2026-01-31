@@ -7,7 +7,8 @@ exports.login = async (req, res) => {
         
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Login failed' });
+        console.log(err);
+        res.status(401).json(err.response?.data || { message: 'Login failed' });
     }
 }
 
@@ -16,7 +17,7 @@ exports.me = async (req, res) => {
         const response = await authService.me(authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to get user' });
+        res.status(401).json(err.response?.data || { message: 'Failed to get user' });
     }
 }
 
@@ -25,7 +26,7 @@ exports.refresh = async (req, res) => {
         const response = await authService.refresh(req.body, authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to refresh token' });
+        res.status(401).json(err.response?.data || { message: 'Failed to refresh token' });
     }
 }
 
@@ -34,7 +35,7 @@ exports.logout = async (req, res) => {
         const response = await authService.logout(authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Logout failed' });
+        res.status(401).json(err.response?.data || { message: 'Logout failed' });
     }
 }
 
@@ -43,6 +44,6 @@ exports.createUser = async (req, res) => {
         const response = await authService.createUser(req.body, authUtil.getAuthHeaders(req));
         res.json(response.data);
     } catch (err) {
-        res.status(401).json(err.response?.data || { error: 'Failed to create user' });
+        res.status(401).json(err.response?.data || { message: 'Failed to create user' });
     }
 }

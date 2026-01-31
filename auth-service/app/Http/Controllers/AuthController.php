@@ -7,21 +7,27 @@ use App\Models\RefreshToken;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $validated = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
+        if ($validated->fails()) {
+            return response()->json(['message' => 'Missing required fields'], 400);
+        }
+
+        $credentials = $validated->validated();
         $sessionId = Str::uuid();
 
         if (!$token = auth()->claims(['session_id' => $sessionId])->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized', 401]);
+            return response()->json(['message' => 'Unauthorized', 401]);
         }
 
         $refreshToken = Str::random(64);

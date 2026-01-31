@@ -14,4 +14,5 @@ Route::group(['middleware' => 'gateway.auth'], function() {
     });
 
     Route::get('audit-logs', [AuditLogController::class, 'index']);
+    Route::get('audit-logs/{auditLog}', [AuditLogController::class, 'get']);
 });
