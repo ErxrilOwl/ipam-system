@@ -6,11 +6,13 @@ import SidebarLayout from '../sidebar/Sidebar';
 
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useAuth } from '@/auth/AuthContext';
 
 const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [mobileMenu, setMobileMenu] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
 
   const handleScroll = useEffectEvent(() => {
     if (window.scrollY > 50) {
@@ -92,7 +94,7 @@ const Header = () => {
           <VisuallyHidden>
             <SheetTitle>sidebar</SheetTitle>
           </VisuallyHidden>
-          <SidebarLayout onClose={() => setIsOpen(false)} />
+          <SidebarLayout onClose={() => setIsOpen(false)} userRole={user?.role ?? ''} />
         </SheetContent>
       </Sheet>
     </>

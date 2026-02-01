@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             'name' => env('USER_DEFAULT_NAME'),
             'email' => env('USER_DEFAULT_EMAIL'),
             'password' => Hash::make(env('USER_DEFAULT_PASSWORD')),
-            'role' => 'admin'
+            'role' => 'user'
         ]);
     }
 }

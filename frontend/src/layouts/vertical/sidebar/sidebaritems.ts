@@ -11,6 +11,7 @@ export interface ChildItem {
   badge?: boolean;
   badgeType?: string;
   isPro?: boolean;
+  roles?: string[];
 }
 
 export interface MenuItem {
@@ -27,6 +28,7 @@ export interface MenuItem {
   badgeType?: string;
   badge?: boolean;
   isPro?: boolean;
+  roles?: string[];
 }
 
 import { uniqueId } from 'lodash';
@@ -40,19 +42,22 @@ const SidebarContent: MenuItem[] = [
         id: uniqueId() + 1,
         name: 'IP List',
         icon: 'solar:laptop-2-linear',
-        url: '/'
+        url: '/',
+        roles: ['admin', 'user']
       },
       {
         id: uniqueId() + 2,
         name: 'User',
         icon: 'solar:users-group-two-rounded-line-duotone',
-        url: '/test'
+        url: '/users',
+        roles: ['admin']
       },
       {
         id: uniqueId() + 3,
         name: 'Audit Logs',
         icon: 'solar:notes-minimalistic-outline',
-        url: '/audit-logs'
+        url: '/audit-logs',
+        roles: ['admin']
       },
     ],
   }

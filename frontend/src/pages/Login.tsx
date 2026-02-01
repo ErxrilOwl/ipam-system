@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { router } from "../routes/Router";
+import axios from "axios";
 
 const Login = () => {
     const { auth } = useAuth();
@@ -30,19 +31,23 @@ const Login = () => {
                 router.navigate('/');
             } catch (err: unknown) {
                 setIsLoading(false);
-                console.log('CAT', err);
-                if (err instanceof Error) {
-                    setErrorMessage(err.message);
-                } else {
-                    setErrorMessage('Something went wrong');
-                }
+                if (axios.isAxiosError(err)) {
+                const message =
+                    err.response?.data?.message ||
+                    err.response?.data?.error ||
+                    'Something went wrong';
+
+                setErrorMessage(message);
+            } else if (err instanceof Error) {
+                setErrorMessage(err.message);
+            } else {
+                setErrorMessage('Something went wrong');
+            }
             }
         } else {
             setIsLoading(false);
             setErrorMessage('Email and password is required.');
-        }
-
-        
+        }  
     }
 
     return (

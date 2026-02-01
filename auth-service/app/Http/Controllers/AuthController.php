@@ -27,7 +27,7 @@ class AuthController extends Controller
         $sessionId = Str::uuid();
 
         if (!$token = auth()->claims(['session_id' => $sessionId])->attempt($credentials)) {
-            return response()->json(['message' => 'Unauthorized', 401]);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $refreshToken = Str::random(64);

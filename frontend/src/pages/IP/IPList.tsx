@@ -102,7 +102,7 @@ const IPList = () => {
                 sort: sorting[0]?.id,
                 order: sorting[0]?.desc ? "desc" : "asc",
             });
-            console.log(res);
+            
             setIpAddresses(res.data);
             setTotal(res.meta.total);
 
@@ -129,7 +129,6 @@ const IPList = () => {
     }
 
     const handleDelete = (ip: IPAddress) => {
-        console.log(ip);
         setSelectedIp(ip);
         setOpenConfirmDelete(true);
     }

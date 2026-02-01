@@ -7,15 +7,16 @@ import { AMLogo, AMMenu, AMMenuItem, AMSidebar, AMSubmenu } from 'tailwind-sideb
 import 'tailwind-sidebar/styles.css';
 
 interface SidebarItemType {
-  heading?: string
-  id?: number | string
-  name?: string
-  title?: string
-  icon?: string
-  url?: string
-  children?: SidebarItemType[]
-  disabled?: boolean
-  isPro?: boolean
+  heading?: string;
+  id?: number | string;
+  name?: string;
+  title?: string;
+  icon?: string;
+  url?: string;
+  children?: SidebarItemType[];
+  disabled?: boolean;
+  isPro?: boolean;
+  roles?: string[];
 }
 
 const renderSidebarItems = (
@@ -23,9 +24,18 @@ const renderSidebarItems = (
   currentPath: string,
   onClose?: () => void,
   isSubItem: boolean = false,
+  userRole?: string
 ) => {
   
-  return items.map((item) => {
+  return items
+  .filter(item => {
+    if (item.heading) return true;
+
+    if (item.roles && userRole) {
+      return item.roles.includes(userRole);
+    }
+  })
+  .map((item) => {
     const isSelected = currentPath === item?.url;
     const IconComp = item.icon || null;
 
@@ -93,12 +103,10 @@ const renderSidebarItems = (
   });
 };
 
-const SidebarLayout = ({ onClose }: { onClose?: () => void }) => {
+const SidebarLayout = ({ onClose, userRole }: { onClose?: () => void; userRole: string }) => {
   const location = useLocation();
   const pathname = location.pathname;
-  // Only allow "light" or "dark" for AMSidebar
   const sidebarMode = 'light';
-
   return (
     <AMSidebar
       collapsible="none"
@@ -129,6 +137,8 @@ const SidebarLayout = ({ onClose }: { onClose?: () => void }) => {
                 ],
                 pathname,
                 onClose,
+                false,
+                userRole
               )}
             </div>
           ))}
