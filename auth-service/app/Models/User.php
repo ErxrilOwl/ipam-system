@@ -69,6 +69,10 @@ class User extends Authenticatable implements JWTSubject
             })
             ->when($filters['role'] ?? null, function($q, $role) {
                 $q->where('role', $role);
+            })
+            ->when($filters['search'] ?? null, function($q, $search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('role', $search);
             });
     }
 }

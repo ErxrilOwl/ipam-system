@@ -5,7 +5,6 @@ import CardBox from "@/components/shared/CardBox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { router } from "../routes/Router";
 import axios from "axios";

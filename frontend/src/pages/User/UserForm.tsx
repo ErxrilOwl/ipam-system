@@ -1,48 +1,38 @@
-import { createIPAddress, getIPAddress, updateIPAddress } from "@/api/ip.api";
 import CardBox from "@/components/shared/CardBox"
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import { z } from "zod";
 import {zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@radix-ui/react-label";
-import { Textarea } from "@/components/ui/textarea";
 import Loader from "@/components/ui/loader";
 import { toast, Toaster } from "react-hot-toast";
 import BreadcrumbComp from "@/layouts/shared/breadcrumbs";
+import { createUser, getUser, updateUser } from "@/api/user.api";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const BCrumb = [
   {
-    to: '/',
-    title: 'IP Addresses',
+    to: '/users',
+    title: 'Users',
   },
   {
-    title: 'IP Address Form',
+    title: 'User Form',
   },
 ];
 
-const isValidIP = (value: string) => {
-    const ipv4 =
-        /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
-    const ipv6 =
-        /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|::1|::)$/;
-
-    return ipv4.test(value) || ipv6.test(value);
-};
-
 const formSchema = z.object({
-    ip_address: z.string().min(1).refine(isValidIP, {
-        message: 'Invalid IP Address'
-    }),
-    label: z.string().min(1).max(255),
-    comment: z.string().optional()
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  role: z.enum(['admin', 'user'], { message: "Role must be 'admin' or 'user'" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" })
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-const IPForm = () => {
+const UserForm = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -59,11 +49,11 @@ const IPForm = () => {
 
         const fetchData = async () => {
             try {
-                const data = await getIPAddress(Number(id));
+                const data = await getUser(Number(id));
                 form.reset({
-                    ip_address: data.ip_address,
-                    label: data.label,
-                    comment: data.comment ?? ""
+                    name: data.name,
+                    email: data.email,
+                    role: data.role
                 });
             } catch (err) {
                 setIsLoading(false);
@@ -85,14 +75,15 @@ const IPForm = () => {
         try {
             let res = null;
             if (isEditMode) {
-                res = await updateIPAddress(Number(id), values);
+                res = await updateUser(Number(id), values);
                 form.reset({
-                    ip_address: res.data.ip_address,
-                    label: res.data.label,
-                    comment: res.data.comment ?? ""
+                    name: res.data.name,
+                    email: res.data.email,
+                    role: res.data.role,
+                    password: ''
                 });
             } else {
-                res = await createIPAddress(values);
+                res = await createUser(values);
                 form.reset();
             }
 
@@ -110,7 +101,7 @@ const IPForm = () => {
 
     return (
         <>
-            <BreadcrumbComp title={ isEditMode ? "Edit IP Address" : "Create IP Address" } items={BCrumb} />
+            <BreadcrumbComp title={ isEditMode ? "Edit User" : "Create User" } items={BCrumb} />
             <CardBox>
                 <Toaster position="top-right" />
                 <div className="mb-6">
@@ -120,50 +111,80 @@ const IPForm = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                                     <div>
                                         <div className="mb-2 block">
-                                            <Label htmlFor="ip_address">IP Address <span className="text-red-600">*</span></Label>
+                                            <Label htmlFor="name">Name <span className="text-red-600">*</span></Label>
                                         </div>
                                         <Input
-                                            id="ip_address"
-                                            {...form.register("ip_address")} 
+                                            id="name"
+                                            {...form.register("name")} 
                                             className="w-full form-control"
                                         />
-                                        { form.formState.errors.ip_address && (
+                                        { form.formState.errors.name && (
                                             <p className="mt-1 text-sm text-red-600">
-                                                { form.formState.errors.ip_address.message }
+                                                { form.formState.errors.name.message }
                                             </p>
                                         ) }
                                     </div>
 
                                     <div>
                                         <div className="mb-2 block">
-                                            <Label htmlFor="label">Label <span className="text-red-600">*</span></Label>
+                                            <Label htmlFor="email">Email <span className="text-red-600">*</span></Label>
                                         </div>
                                         <Input
-                                            id="label"
-                                            {...form.register("label")} 
+                                            type="email"
+                                            id="email"
+                                            {...form.register("email")} 
                                             className="w-full form-control"
                                         />
-
-                                        { form.formState.errors.label && (
+                                        { form.formState.errors.email && (
                                             <p className="mt-1 text-sm text-red-600">
-                                                { form.formState.errors.label.message }
+                                                { form.formState.errors.email.message }
                                             </p>
                                         ) }
                                     </div>
 
                                     <div>
                                         <div className="mb-2 block">
-                                            <Label htmlFor="comment">Comment</Label>
+                                            <Label htmlFor="password">Password <span className="text-red-600">*</span></Label>
                                         </div>
-                                        <Textarea
-                                            id="comment"
-                                            {...form.register("comment")} 
+                                        <Input
+                                            type="password"
+                                            id="password"
+                                            {...form.register("password")} 
                                             className="w-full form-control"
-                                        ></Textarea>
+                                        />
 
-                                        { form.formState.errors.comment && (
+                                        { form.formState.errors.password && (
                                             <p className="mt-1 text-sm text-red-600">
-                                                { form.formState.errors.comment.message }
+                                                { form.formState.errors.password.message }
+                                            </p>
+                                        ) }
+                                    </div>
+
+                                    <div>
+                                        <div className="mb-2 block">
+                                            <Label htmlFor="role">Role</Label>
+                                        </div>
+                                        <Controller 
+                                            control={form.control}
+                                            name="role"
+                                            render={({ field }) => (
+                                                <Select 
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}>
+                                                <SelectTrigger className="w-full form-control">
+                                                    <SelectValue placeholder="Select an option" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="user">User</SelectItem>
+                                                    <SelectItem value="admin">Admin</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            )}
+                                        />
+
+                                        { form.formState.errors.role && (
+                                            <p className="mt-1 text-sm text-red-600">
+                                                { form.formState.errors.role.message }
                                             </p>
                                         ) }
                                     </div>
@@ -178,7 +199,7 @@ const IPForm = () => {
                                     </Button>
                                     <Button
                                         className="rounded-md bg-red-500 text-white hover:bg-red-600"
-                                        onClick={() => navigate('/')}
+                                        onClick={() => navigate('/users')}
                                     >
                                         Cancel
                                     </Button>
@@ -193,4 +214,4 @@ const IPForm = () => {
     )
 }
 
-export default IPForm;
+export default UserForm;

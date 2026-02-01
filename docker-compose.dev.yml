@@ -1,10 +1,15 @@
 services:
   gateway-service:
-    build: ./gateway-service
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     env_file:
       - ./gateway-service/.env
+    volumes:
+      - ./gateway-service:/app
+      - /app/node_modules
     depends_on:
       - auth-service
       - ip-service

@@ -1,10 +1,8 @@
-import { deleteIPAddress, getIPAddresses } from "@/api/ip.api";
 import CardBox from "@/components/shared/CardBox";
 import Search from "@/components/shared/Search";
 import { format } from 'date-fns'
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { IPAddress } from "@/types/ip";
 import { flexRender, getCoreRowModel, useReactTable, type ColumnDef, type PaginationState, type SortingState } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ChevronsUpDown, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -14,40 +12,42 @@ import { router } from "@/routes/Router";
 import { toast, Toaster } from 'react-hot-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BreadcrumbComp from "@/layouts/shared/breadcrumbs";
+import type { User } from "@/types/user";
+import { deleteUser, getUsers } from "@/api/user.api";
 
 const BCrumb = [
   {
-    title: 'IP Addresses',
+    title: 'Users',
   }
 ];
 
 type ActionColumnProps = {
-    onEdit: (ip: IPAddress) => void;
-    onDelete: (ip: IPAddress) => void;
+    onEdit: (user: User) => void;
+    onDelete: (user: User) => void;
 }
 
 const getColumns = ({
     onEdit,
     onDelete
-}: ActionColumnProps): ColumnDef<IPAddress>[] => [
+}: ActionColumnProps): ColumnDef<User>[] => [
     {
         accessorKey: "id",
         header: "ID",
         cell: (info) => info.getValue()
     },
     {
-        accessorKey: "ip_address",
-        header: "IP Address",
+        accessorKey: "name",
+        header: "Name",
         cell: (info) => info.getValue()
     },
     {
-        accessorKey: "label",
-        header: "Label",
+        accessorKey: "email",
+        header: "Email",
         cell: (info) => info.getValue()
     },
     {
-        accessorKey: "created_by",
-        header: "Created By",
+        accessorKey: "role",
+        header: "Role",
         cell: (info) => info.getValue()
     },
     {
@@ -72,11 +72,11 @@ const getColumns = ({
     }
 ];
 
-const IPList = () => {
-    const [ipAddresses, setIpAddresses] = useState<IPAddress[]>([]);
+const UserList = () => {
+    const [data, setData] = useState<User[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedIp, setSelectedIp] = useState<IPAddress | null>(null);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
 
     const [pagination, setPagination] = useState<PaginationState>({
@@ -95,7 +95,7 @@ const IPList = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const res = await getIPAddresses({
+            const res = await getUsers({
                 page: pagination.pageIndex + 1,
                 limit: pagination.pageSize,
                 search,
@@ -103,7 +103,7 @@ const IPList = () => {
                 order: sorting[0]?.desc ? "desc" : "asc",
             });
             
-            setIpAddresses(res.data);
+            setData(res.data);
             setTotal(res.meta.total);
 
         } catch (err) {
@@ -124,12 +124,12 @@ const IPList = () => {
         setSearch(query);
     }
 
-    const handleEdit = (ip: IPAddress) => {
-        router.navigate(`ip/${ip.id}/edit`);
+    const handleEdit = (user: User) => {
+        router.navigate(`/users/${user.id}/edit`);
     }
 
-    const handleDelete = (ip: IPAddress) => {
-        setSelectedIp(ip);
+    const handleDelete = (user: User) => {
+        setSelectedUser(user);
         setOpenConfirmDelete(true);
     }
 
@@ -137,9 +137,10 @@ const IPList = () => {
         setIsLoading(true);
 
         try {
-            const res = await deleteIPAddress(Number(selectedIp?.id));
+            const res = await deleteUser(Number(selectedUser?.id));
             toast.success(res.message)
             setIsLoading(false);
+            fetchData();
         } catch (err) {
             setIsLoading(false);
 
@@ -150,7 +151,7 @@ const IPList = () => {
             }
         } finally {
             setOpenConfirmDelete(false);
-            setSelectedIp(null);
+            setSelectedUser(null);
         }
     }
 
@@ -166,7 +167,7 @@ const IPList = () => {
     }, [pagination, sorting, search]);
 
     const table = useReactTable({
-        data: ipAddresses,
+        data,
         columns,
         state: {
             pagination,
@@ -182,21 +183,21 @@ const IPList = () => {
 
     return (
         <>
-            <BreadcrumbComp title="IP Addresses" items={BCrumb} />
+            <BreadcrumbComp title="Users" items={BCrumb} />
             <CardBox>
                 <Toaster position="top-right"/>
                 <Dialog open={openConfirmDelete} onOpenChange={setOpenConfirmDelete}>
                     <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
-                        <DialogTitle>Delete IP</DialogTitle>
-                        <DialogDescription>Are you sure you want to delete this IP?</DialogDescription>
+                        <DialogTitle>Delete User</DialogTitle>
+                        <DialogDescription>Are you sure you want to delete this User?</DialogDescription>
                     </DialogHeader>
 
                     <DialogFooter className="flex gap-2 sm:justify-end">
                         <Button variant={'destructive'} onClick={onDelete} className="rounded-md">Delete</Button>
                         <Button variant={'outline'}  onClick={() => {
                             setOpenConfirmDelete(false);
-                            setSelectedIp(null);
+                            setSelectedUser(null);
                         }} className="rounded-md">Cancel</Button>
                     </DialogFooter>
                     </DialogContent>
@@ -206,7 +207,7 @@ const IPList = () => {
                     <div>
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <Search onSearch={handleSearch} />
-                            <Link to={'/ip/create'} className="mt-auto sm:mt-0 self-end sm:self-auto">
+                            <Link to={'/users/create'} className="mt-auto sm:mt-0 self-end sm:self-auto">
                                 <Button variant="info" className="flex items-center gap-1">
                                     <PlusIcon className="w-3 h-3" />Add
                                 </Button>
@@ -306,4 +307,4 @@ const IPList = () => {
     )
 }
 
-export default IPList;
+export default UserList;

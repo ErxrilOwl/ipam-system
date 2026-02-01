@@ -140,6 +140,7 @@ const IPList = () => {
             const res = await deleteIPAddress(Number(selectedIp?.id));
             toast.success(res.message)
             setIsLoading(false);
+            fetchData();
         } catch (err) {
             setIsLoading(false);
 
