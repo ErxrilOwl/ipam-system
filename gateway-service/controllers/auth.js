@@ -37,12 +37,3 @@ exports.logout = async (req, res) => {
         res.status(401).json(err.response?.data || { message: 'Logout failed' });
     }
 }
-
-exports.createUser = async (req, res) => {
-    try {
-        const response = await authService.createUser(req.body, authUtil.getAuthHeaders(req));
-        res.json(response.data);
-    } catch (err) {
-        res.status(401).json(err.response?.data || { message: 'Failed to create user' });
-    }
-}
