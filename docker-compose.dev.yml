@@ -15,13 +15,15 @@ services:
       - ip-service
 
   auth-service:
-    build: ./auth-service
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile.dev
     env_file:
       - ./auth-service/.env
     ports:
       - "8001:8001"
     volumes:
-      - ./auth-service:/app
+      - ./auth-service:/var/www
     depends_on:
       - auth-db
 
@@ -36,13 +38,15 @@ services:
       - "3306:3306"
 
   ip-service:
-    build: ./ip-service
+    build: 
+      context: ./ip-service
+      dockerfile: Dockerfile.dev
     env_file:
       - ./ip-service/.env
     ports:
       - "8002:8002"
     volumes:
-      - ./ip-service:/app
+      - ./ip-service:/var/www
     depends_on:
       - ip-db
 

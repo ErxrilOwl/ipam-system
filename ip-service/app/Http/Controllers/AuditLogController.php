@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateAuditLogRequest;
 use App\Http\Resources\AuditLogResource;
 use App\Models\AuditLog;
 use App\Services\AuditLogger;
@@ -24,7 +23,7 @@ class AuditLogController extends Controller
         );
     }
 
-    public function store(CreateAuditLogRequest $request)
+    public function store(Request $request)
     {
         $auditLog = AuditLogger::log(
             $request,
@@ -32,7 +31,11 @@ class AuditLogController extends Controller
             $request->resource_type,
             $request->resource_id,
             $request->before ?? null,
-            $request->after ?? null
+            $request->after ?? null,
+            $request->user_id ?? null,
+            $request->user_name ?? null,
+            $request->user_role ?? null,
+            $request->session_id ?? null
         );
 
         return response()->json([

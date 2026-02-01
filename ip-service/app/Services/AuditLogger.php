@@ -13,13 +13,17 @@ class AuditLogger
         $resourceType,
         $resourceId = null,
         $before = null,
-        $after = null
+        $after = null,
+        $user_id = null,
+        $user_name = null,
+        $user_role = null,
+        $session_id = null
     ) {
         AuditLog::create([
-            'user_id' => $request->header('x-user-id'),
-            'user_name' => $request->header('x-user-name'),
-            'user_role' => $request->header('x-user-role'),
-            'session_id' => $request->header('x-session-id'),
+            'user_id' => $user_id ? $user_id : $request->header('x-user-id'),
+            'user_name' => $user_name ? $user_name : $request->header('x-user-name'),
+            'user_role' => $user_role ? $user_role : $request->header('x-user-role'),
+            'session_id' => $session_id ? $session_id : $request->header('x-session-id'),
             'action' => $action,
             'resource_type' => $resourceType,
             'resource_id' => $resourceId,

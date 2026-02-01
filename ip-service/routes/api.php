@@ -13,9 +13,10 @@ Route::group(['middleware' => 'gateway.auth'], function() {
         Route::delete('/{ipAddress}', [IpAddressController::class, 'destroy']);
     });
 
-    Route::group(['prefix' => 'audit-logs', 'middleware' => 'admin'], function() {
+    Route::group(['prefix' => 'audit-logs'], function() {
         Route::get('/', [AuditLogController::class, 'index']);
-        Route::post('/', [AuditLogController::class, 'store']);
         Route::get('/{auditLog}', [AuditLogController::class, 'get']);
     });
 });
+
+Route::post('/audit-logs', [AuditLogController::class, 'store']);

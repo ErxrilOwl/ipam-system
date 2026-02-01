@@ -38,7 +38,7 @@ class AuthController extends Controller
             'expires_at' => Carbon::now()->addDays(7)
         ]);
 
-        return $this->createResponse($token, $refreshToken);
+        return $this->createResponse($token, $refreshToken, $sessionId);
     }
 
     public function refresh(Request $request)
@@ -74,14 +74,15 @@ class AuthController extends Controller
         return response()->json(new UserResource(auth()->user()));
     }
 
-    protected function createResponse($token, $refreshToken)
+    protected function createResponse($token, $refreshToken, $sessionId = null)
     {
         return response()->json([
             'access_token' => $token,
             'refresh_token' => $refreshToken,
             'auth_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => new UserResource(auth()->user())
+            'user' => new UserResource(auth()->user()),
+            'session_id' => $sessionId
         ]);
     }
 }

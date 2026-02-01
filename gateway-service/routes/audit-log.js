@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const ipController = require('../controllers/ip');
+const auditLogController = require('../controllers/audit-log');
 const authMiddleware = require('../middleware/auth');
 
-router.get('/', authMiddleware, ipController.getAuditLogs);
-router.get('/:id', authMiddleware, ipController.getAuditLog);
+router.get('/', authMiddleware, auditLogController.getAuditLogs);
+router.get('/:id', authMiddleware, auditLogController.getAuditLog);
 
 module.exports = router;

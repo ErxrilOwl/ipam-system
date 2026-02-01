@@ -11,7 +11,7 @@ class CreateAuditLogRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class CreateAuditLogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'action' => 'required',
+            'resource_type' => 'required',
+            'resource_id' => 'required'
         ];
     }
 }

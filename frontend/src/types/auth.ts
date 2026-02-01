@@ -5,5 +5,7 @@ export interface AuthResponse {
     refresh_token: string,
     auth_type: string,
     expires_in: number,
-    user: User
+    user: User,
+    role: string,
+    session_id: string
 }

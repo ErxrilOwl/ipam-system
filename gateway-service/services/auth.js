@@ -13,5 +13,3 @@ exports.login = data => client.post('/auth/login', data);
 exports.me = headers => client.get('/auth/me', { headers });
 exports.refresh = (data, headers) => client.post('/auth/refresh', data, { headers });
 exports.logout = headers => client.post('/auth/logout', null, { headers });
-
-exports.createUser = (data, headers) => client.post('/users', data, { headers });
