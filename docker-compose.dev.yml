@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./gateway-service/.env.docker
+      - ./gateway-service/.env
     depends_on:
       - auth-service
       - ip-service
@@ -12,9 +12,11 @@ services:
   auth-service:
     build: ./auth-service
     env_file:
-      - ./auth-service/.env.docker
-    expose:
+      - ./auth-service/.env
+    ports:
       - "8001:8001"
+    volumes:
+      - ./auth-service:/app
     depends_on:
       - auth-db
 
@@ -25,13 +27,17 @@ services:
       MYSQL_DATABASE: auth_db
     volumes:
       - auth-db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
   ip-service:
     build: ./ip-service
     env_file:
-      - ./ip-service/.env.docker
-    expose:
+      - ./ip-service/.env
+    ports:
       - "8002:8002"
+    volumes:
+      - ./ip-service:/app
     depends_on:
       - ip-db
 
@@ -42,11 +48,20 @@ services:
       MYSQL_DATABASE: ip_db
     volumes:
       - ip-db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     ports:
-      - "8080:80"
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - gateway-service
 

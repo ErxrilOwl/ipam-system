@@ -78,9 +78,6 @@ const Login = () => {
                                 Remeber this Device
                                 </Label>
                             </div>
-                            <Link to={'/'} className="text-primary text-sm font-medium">
-                                Forgot Password ?
-                            </Link>
                         </div>
 
                         { errorMessage.length > 0 && <p className="mt-2 text-sm text-red-600 dark:text-red-500">{ errorMessage }</p> }

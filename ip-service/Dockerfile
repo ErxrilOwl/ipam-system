@@ -15,6 +15,6 @@ RUN composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data /var/www
 
-EXPOSE 8001
+EXPOSE 8002
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8001"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8002"]

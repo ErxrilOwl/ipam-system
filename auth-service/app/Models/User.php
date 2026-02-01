@@ -60,4 +60,15 @@ class User extends Authenticatable implements JWTSubject
             'name' => $this->name
         ];
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        return $query
+            ->when($filters['name'] ?? null, function($q, $name) {
+                $q->where('name', 'LIKE', "%{$name}%");
+            })
+            ->when($filters['role'] ?? null, function($q, $role) {
+                $q->where('role', $role);
+            });
+    }
 }

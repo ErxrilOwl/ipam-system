@@ -15,6 +15,6 @@ Route::group(['prefix' => 'auth'], function () {
     });
 });
 
-Route::group(['prefix' => 'users', 'middleware' => 'auth:api'], function() {
-    Route::post('/', [UserController::class, 'store']);
+Route::group(['middleware' => ['auth:api', 'admin']], function() {
+    Route::apiResource('users', UserController::class);
 });

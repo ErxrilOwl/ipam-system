@@ -14,3 +14,5 @@ Once the Docker Engine/Desktop is running on the host machine, open a terminal i
 - `docker-compose exec auth-service php artisan jwt:secret` - This will generate JWT secret that needs to be copy and pasted in all .env with JWT_SECRET (auth-service, gateway-service, ip-service)
 - `docker-compose exec ip-service php artisan key:generate` - To generate key for Laravel
 - `docker-compose exec ip-service php artisan migrate` - This will populate the database with initial data
+
+> **Note:** use `docker-compose -f docker-compose.dev.yml up` for development

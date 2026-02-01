@@ -53,10 +53,9 @@ const Profile = () => {
           </DropdownMenuItem>
 
           <DropdownMenuSeparator className='my-2' />
-
+    
           <div className="pt-2 px-4">
             <Button
-              asChild
               variant="outline"
               className="w-full rounded-md"
               onClick={handleLogout}
