@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { login as loginApi } from '../api/auth.api';
 import { useAuth } from "../auth/AuthContext"
 import CardBox from "@/components/shared/CardBox";
@@ -10,11 +10,17 @@ import { router } from "../routes/Router";
 import axios from "axios";
 
 const Login = () => {
-    const { auth } = useAuth();
+    const { auth, user } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (user) {
+            router.navigate('/');
+        }
+    }, [user]);
 
     const submit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -27,7 +33,7 @@ const Login = () => {
                 const res = await loginApi(email, password);
                 auth(res.access_token, res.refresh_token, res.user);
                 setIsLoading(false);
-                router.navigate('/');
+                // router.navigate('/');
             } catch (err: unknown) {
                 setIsLoading(false);
                 if (axios.isAxiosError(err)) {
@@ -50,7 +56,7 @@ const Login = () => {
     }
 
     return (
-        <div className="relative overflow-hidden h-screen bg-lightprimary dark:bg-darkprimary">
+        <div className="relative overflow-hidden h-screen bg-gradient-green">
             <div className="flex h-full justify-center items-center px-4">
                 <CardBox className="md:w-[450px] w-full border-none">
                     <div className="mx-auto mb-6">

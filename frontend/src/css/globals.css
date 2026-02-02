@@ -170,7 +170,7 @@ body {
   --card-foreground: var(--white);
   --popover: #333f55;
   --popover-foreground: var(--white);
-  --primary: #5d87ff;
+  --primary: #59AC77;
   --primary-foreground: var(--white);
   --secondary: #49beff;
   --secondary-foreground: var(--white);
@@ -311,4 +311,9 @@ body {
   .sales-overview select {
     @apply pr-9!;
   }
+}
+
+.bg-gradient-green {
+  background: #3CB371;
+  background: linear-gradient(152deg, rgba(60, 179, 113, 1) 0%, rgba(87, 199, 133, 1) 57%, rgba(237, 221, 83, 1) 100%);
 }
