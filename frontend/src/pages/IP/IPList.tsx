@@ -14,6 +14,8 @@ import { router } from "@/routes/Router";
 import { toast, Toaster } from 'react-hot-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BreadcrumbComp from "@/layouts/shared/breadcrumbs";
+import { useAuth } from "@/auth/AuthContext";
+import type { User } from "@/types/user";
 
 const BCrumb = [
   {
@@ -22,11 +24,13 @@ const BCrumb = [
 ];
 
 type ActionColumnProps = {
+    user: User | null,
     onEdit: (ip: IPAddress) => void;
     onDelete: (ip: IPAddress) => void;
 }
 
 const getColumns = ({
+    user,
     onEdit,
     onDelete
 }: ActionColumnProps): ColumnDef<IPAddress>[] => [
@@ -63,16 +67,31 @@ const getColumns = ({
         header: "Actions",
         enableSorting: false,
         enableColumnFilter: false,
-        cell: ({ row }) => (
-            <div className="flex gap-2">
-                <Button onClick={() => onEdit(row.original)}>Edit</Button>
-                <Button variant={'destructive'} className="text-white" onClick={() => onDelete(row.original)}>Delete</Button>
-            </div>
-        )
+        cell: ({ row }) => {
+            const isOwner = row.original.created_by === user?.id;
+            const isUserRole = user?.role === "user";
+
+            console.log(isUserRole, isOwner)
+            if (isUserRole && !isOwner) return null;
+
+            return (
+                <div className="flex gap-2">
+                    <Button onClick={() => onEdit(row.original)}>Edit</Button>
+                    <Button
+                        variant="destructive"
+                        className="text-white"
+                        onClick={() => onDelete(row.original)}
+                    >
+                        Delete
+                    </Button>
+                </div>
+            );
+        },
     }
 ];
 
 const IPList = () => {
+    const { user } = useAuth();
     const [ipAddresses, setIpAddresses] = useState<IPAddress[]>([]);
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -157,6 +176,7 @@ const IPList = () => {
 
     const columns = useMemo(() => {
         return getColumns({
+            user,
             onEdit: handleEdit,
             onDelete: handleDelete
         })

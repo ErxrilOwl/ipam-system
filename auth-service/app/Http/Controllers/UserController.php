@@ -20,6 +20,7 @@ class UserController extends Controller
 
         return UserResource::collection(
             User::filter($params)
+            ->where('id', '<>', auth()->user()->id)
             ->orderBy($sort, $order)
             ->paginate($limit));
     }
