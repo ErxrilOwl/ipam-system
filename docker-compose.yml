@@ -4,7 +4,7 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - ./gateway-service/.env.docker
+      - ./gateway-service/.env
     depends_on:
       - auth-service
       - ip-service
@@ -12,7 +12,7 @@ services:
   auth-service:
     build: ./auth-service
     env_file:
-      - ./auth-service/.env.docker
+      - ./auth-service/.env
     expose:
       - "8001:8001"
     depends_on:
@@ -29,7 +29,7 @@ services:
   ip-service:
     build: ./ip-service
     env_file:
-      - ./ip-service/.env.docker
+      - ./ip-service/.env
     expose:
       - "8002:8002"
     depends_on:
